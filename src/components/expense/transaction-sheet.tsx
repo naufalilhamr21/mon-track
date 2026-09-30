@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Calendar, Trash2, Tag, FileText } from "lucide-react";
+import { X, Calendar, Trash2, FileText } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema, type TransactionFormValues } from "@/schemas/transaction-schema";
@@ -144,9 +144,8 @@ export function TransactionSheet({
 
       {/* Sheet */}
       <div
-        className="animate-slide-up absolute bottom-0 left-0 right-0 max-h-[96dvh] overflow-y-auto bg-white shadow-2xl"
+        className="animate-slide-up absolute bottom-0 left-0 right-0 max-h-[96dvh] overflow-y-auto bg-white shadow-2xl rounded-t-[32px]"
         style={{
-          borderRadius: "1.5rem 1.5rem 0 0",
           paddingBottom: "env(safe-area-inset-bottom, 16px)",
         }}
       >
@@ -157,21 +156,21 @@ export function TransactionSheet({
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3">
-          <h2 className="text-base font-bold text-slate-800">
+          <h2 className="text-base font-bold text-slate-900">
             {isEditing ? "Ubah Transaksi" : isExpense ? "Tambah Pengeluaran" : "Tambah Pemasukan"}
           </h2>
           <button
             onClick={() => onOpenChange(false)}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Tutup"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* ── Type Switcher — violet expense, green income ── */}
+        {/* ── Type Switcher ── */}
         <div className="px-5 pb-3">
-          <div className="flex rounded-xl overflow-hidden bg-slate-100 p-1 gap-1">
+          <div className="flex rounded-full overflow-hidden bg-slate-100 p-1 gap-1">
             {(["expense", "income"] as TransactionType[]).map((t) => {
               const active = txType === t;
               const isExp = t === "expense";
@@ -181,15 +180,13 @@ export function TransactionSheet({
                   type="button"
                   onClick={() => form.setValue("type", t)}
                   className={cn(
-                    "flex-1 rounded-lg py-2 text-sm font-bold transition-all",
+                    "flex-1 rounded-full py-2 text-xs font-bold transition-all cursor-pointer active:scale-95",
                     active
-                      ? isExp
-                        ? "bg-violet-600 text-white shadow-sm"
-                        : "bg-emerald-500 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-600"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-500 hover:text-slate-800"
                   )}
                 >
-                  {isExp ? "✦ Pengeluaran" : "✦ Pemasukan"}
+                  {isExp ? "Pengeluaran" : "Pemasukan"}
                 </button>
               );
             })}
@@ -197,7 +194,7 @@ export function TransactionSheet({
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="px-5 pb-5 space-y-4">
-          {/* Amount */}
+          {/* Amount Input */}
           <AmountInput
             value={amount}
             onChange={(val) => form.setValue("amount", val, { shouldValidate: true })}
@@ -208,7 +205,7 @@ export function TransactionSheet({
           {/* Wallet Selector */}
           {wallets.length > 0 && (
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                 Dari Dompet
               </p>
               <div className="flex flex-wrap gap-2">
@@ -222,15 +219,15 @@ export function TransactionSheet({
                         form.setValue("walletId", w.id, { shouldValidate: true })
                       }
                       className={cn(
-                        "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all",
+                        "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer active:scale-95",
                         active
-                          ? "border-violet-500 bg-violet-50 text-violet-700"
-                          : "border-slate-200 bg-white text-slate-500"
+                          ? "border-slate-900 bg-slate-900 text-white shadow-xs"
+                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                       )}
                     >
                       <CategoryIcon
                         icon={w.icon}
-                        color={active ? "#7C3AED" : "#94A3B8"}
+                        color={active ? "#FFFFFF" : "#0F172A"}
                         className="h-3.5 w-3.5"
                       />
                       {w.name}
@@ -243,7 +240,7 @@ export function TransactionSheet({
 
           {/* Category */}
           <div>
-            <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
               Kategori
             </p>
             <CategoryPicker
@@ -254,7 +251,7 @@ export function TransactionSheet({
               }
             />
             {form.formState.errors.categoryId && (
-              <p className="mt-1.5 text-xs font-bold text-rose-500">
+              <p className="mt-1.5 text-xs font-bold text-slate-900">
                 {form.formState.errors.categoryId.message}
               </p>
             )}
@@ -262,82 +259,71 @@ export function TransactionSheet({
 
           {/* Catatan */}
           <div>
-            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">
-              <FileText className="h-3 w-3" strokeWidth={2.5} />
+            <label className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              <FileText className="h-3.5 w-3.5 text-slate-400" strokeWidth={2.5} />
               Catatan
-              <span className="font-medium normal-case text-slate-300">(opsional)</span>
+              <span className="font-normal normal-case text-slate-400">(opsional)</span>
             </label>
             <input
               {...form.register("note")}
               type="text"
-              placeholder="Makan siang, bensin, gaji bulanan..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 placeholder:text-slate-300 focus:border-violet-400 focus:bg-white focus:outline-none transition-all"
+              placeholder="Makan siang, bensin, belanja..."
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:bg-white focus:outline-none transition-all"
             />
           </div>
 
           {/* Tanggal */}
           <div>
-            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">
-              <Calendar className="h-3 w-3" strokeWidth={2.5} />
+            <label className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              <Calendar className="h-3.5 w-3.5 text-slate-400" strokeWidth={2.5} />
               Tanggal
             </label>
             <input
               {...form.register("date")}
               type="date"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:border-violet-400 focus:bg-white focus:outline-none transition-all"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-sm font-semibold text-slate-900 focus:border-slate-900 focus:bg-white focus:outline-none transition-all"
             />
           </div>
 
-          {/* Save Button — violet (expense) or green (income) */}
+          {/* Save Button */}
           <button
             type="submit"
             disabled={isSubmitting || amount === 0}
             className={cn(
-              "w-full rounded-xl py-3.5 text-sm font-bold transition-all",
+              "w-full h-[52px] rounded-full py-3.5 text-sm font-bold transition-all cursor-pointer disabled:cursor-not-allowed",
               isSubmitting || amount === 0
-                ? "cursor-not-allowed bg-slate-100 text-slate-400"
-                : isExpense
-                ? "bg-violet-600 text-white hover:bg-violet-700 active:scale-[0.99]"
-                : "bg-emerald-500 text-white hover:bg-emerald-600 active:scale-[0.99]"
+                ? "bg-slate-100 text-slate-400"
+                : "bg-slate-900 text-white hover:bg-black active:scale-[0.98] shadow-md shadow-slate-900/10"
             )}
-            style={
-              isSubmitting || amount === 0
-                ? {}
-                : isExpense
-                ? { boxShadow: "0 4px 14px rgba(124,58,237,0.3)" }
-                : { boxShadow: "0 4px 14px rgba(16,185,129,0.3)" }
-            }
           >
             {isSubmitting
               ? "Menyimpan..."
               : isEditing
               ? "Simpan Perubahan"
-              : isExpense
-              ? "Catat Pengeluaran"
-              : "Catat Pemasukan"}
+              : "Simpan Transaksi"}
           </button>
 
-          {/* Delete */}
+          {/* Delete (Edit Mode Only) */}
           {isEditing && !showDeleteConfirm && (
             <button
               type="button"
               onClick={() => setShowDeleteConfirm(true)}
-              className="w-full rounded-xl border border-slate-200 py-3 text-sm font-bold text-slate-400 hover:border-rose-200 hover:text-rose-400 transition-colors"
+              className="w-full rounded-full border border-slate-200 py-3 text-xs font-bold text-slate-500 hover:border-slate-900 hover:text-slate-900 transition-colors cursor-pointer"
             >
               Hapus Transaksi
             </button>
           )}
 
           {isEditing && showDeleteConfirm && (
-            <div className="rounded-xl border border-rose-100 bg-rose-50 p-4">
-              <p className="mb-3 text-sm font-bold text-center text-slate-700">
-                Yakin ingin menghapus?
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-3 text-sm font-bold text-center text-slate-900">
+                Yakin ingin menghapus transaksi ini?
               </p>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-bold text-slate-500"
+                  className="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-bold text-slate-600 cursor-pointer"
                 >
                   Batal
                 </button>
@@ -345,7 +331,7 @@ export function TransactionSheet({
                   type="button"
                   onClick={handleDelete}
                   disabled={isSubmitting}
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-bold text-white bg-rose-500 disabled:opacity-60"
+                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold text-white bg-slate-900 hover:bg-black transition-colors disabled:opacity-60 cursor-pointer"
                 >
                   <Trash2 className="h-4 w-4" />
                   Hapus

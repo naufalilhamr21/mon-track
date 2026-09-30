@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTransactionStore } from "@/stores/transaction-store";
 import { useCategoryStore } from "@/stores/category-store";
 import {
@@ -17,9 +17,19 @@ import {
 import { formatCurrency, formatMonthYear } from "@/lib/utils";
 import {
   BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  TrendingUp,
+  TrendingDown,
+  CalendarDays,
+  Sparkles,
+  BarChart3,
+} from "lucide-react";
+
+const MONO_SHADES = ["#0F172A", "#334155", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0"];
 
 export default function ReportsPage() {
   const transactions = useTransactionStore((s) => s.transactions);
@@ -55,45 +65,43 @@ export default function ReportsPage() {
   const formatTooltipValue = (value: any) => formatCurrency(Number(value ?? 0));
 
   const tooltipStyle = {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.96)",
     borderRadius: "16px",
-    border: "1.5px solid rgba(168,200,232,0.5)",
-    boxShadow: "0 8px 24px rgba(26,43,107,0.1)",
-    color: "#1A2B6B",
+    border: "1px solid rgba(226, 232, 240, 0.9)",
+    boxShadow: "0 10px 30px -5px rgba(15, 23, 42, 0.08)",
+    color: "#0F172A",
     fontSize: "12px",
-    fontWeight: 800,
-    padding: "8px 12px",
+    fontWeight: 700,
+    padding: "8px 14px",
   };
 
   const isPositive = netCashFlow >= 0;
 
   return (
-    <div className="mx-auto max-w-lg px-4 pt-6 pb-8">
+    <div className="mx-auto max-w-lg px-4 pt-6 pb-24">
       {/* ── Header ── */}
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black" style={{ color: "#1A2B6B" }}>Analitik</h1>
-          <p className="text-xs font-semibold text-[#9AA8C8] mt-0.5">
-            Ringkasan keuangan bulanan
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Analitik</h1>
+          <p className="text-xs font-semibold text-slate-400 mt-0.5">
+            Ringkasan &amp; tren keuangan
           </p>
         </div>
-        <div
-          className="flex items-center gap-1 rounded-[var(--radius)] p-1 border-2"
-          style={{ backgroundColor: "white", borderColor: "rgba(168,200,232,0.5)" }}
-        >
+        {/* Month Selector Pill */}
+        <div className="flex items-center gap-1 rounded-full p-1 bg-white border border-slate-200/80 shadow-xs">
           <button
             onClick={() => navigateMonth(-1)}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-[#9AA8C8] hover:bg-[#E0F0FB] transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
             aria-label="Bulan sebelumnya"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="min-w-[7rem] text-center text-xs font-black" style={{ color: "#1A2B6B" }}>
+          <span className="min-w-[6.5rem] text-center text-xs font-bold text-slate-800">
             {formatMonthYear(year, month)}
           </span>
           <button
             onClick={() => navigateMonth(1)}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-[#9AA8C8] hover:bg-[#E0F0FB] transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
             aria-label="Bulan berikutnya"
           >
             <ChevronRight className="h-4 w-4" />
@@ -102,49 +110,84 @@ export default function ReportsPage() {
       </div>
 
       {/* ── Net Cash Flow Hero ── */}
-      <div
-        className="rounded-[var(--radius)] p-4 mb-4 relative overflow-hidden hero-navy"
-        style={{ boxShadow: "0 8px 24px rgba(26,43,107,0.35)" }}
-      >
-        <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-[#A8C8E8] opacity-15" />
-        <div className="absolute right-10 -bottom-5 h-14 w-14 rounded-full bg-[#F4A0C0] opacity-15" />
-        <div className="relative">
-          <p className="text-[10px] font-black uppercase tracking-wider text-white/60 mb-1">
+      <div className="fun-card p-5 mb-4 transition-all">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
             Arus Kas Bersih
           </p>
-          <p className="text-2xl font-black tabular-nums text-white">
+          <p className="text-3xl font-extrabold tabular-nums tracking-tight text-slate-900">
             {isPositive ? "+" : "-"}{formatCurrency(Math.abs(netCashFlow))}
           </p>
+          <div className="mt-2.5">
+            <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide bg-slate-100 text-slate-700 border border-slate-200/80">
+              {isPositive ? (
+                <>
+                  <TrendingUp className="h-3.5 w-3.5 text-slate-900" />
+                  <span>Surplus bulan ini</span>
+                </>
+              ) : (
+                <>
+                  <TrendingDown className="h-3.5 w-3.5 text-slate-600" />
+                  <span>Defisit bulan ini</span>
+                </>
+              )}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* ── Stats Grid ── */}
+      {/* ── Stats Grid (2-column compact metric cards) ── */}
       <div className="mb-4 grid grid-cols-2 gap-3">
-        <StatCard label="Pengeluaran" value={formatCurrency(totalSpending)} color="#C0456A" bg="#FDE8F2" />
-        <StatCard label="Pemasukan" value={formatCurrency(totalIncome)} color="#3A6E28" bg="#E8F6E2" />
-        <StatCard label="Rata-rata / Hari" value={formatCurrency(avgDaily)} color="#A07010" bg="#FFF5D6" />
-        <StatCard label="Terbesar" value={largest ? formatCurrency(largest.amount) : "-"} color="#2A6BA8" bg="#E0F0FB" subValue={largestCat?.category.name} />
+        <StatCard
+          label="Pengeluaran"
+          value={formatCurrency(totalSpending)}
+          icon={TrendingDown}
+          iconBg="bg-slate-100"
+          iconColor="text-slate-700"
+        />
+        <StatCard
+          label="Pemasukan"
+          value={formatCurrency(totalIncome)}
+          icon={TrendingUp}
+          iconBg="bg-slate-100"
+          iconColor="text-slate-900"
+        />
+        <StatCard
+          label="Rata-rata / Hari"
+          value={formatCurrency(avgDaily)}
+          icon={CalendarDays}
+          iconBg="bg-slate-100"
+          iconColor="text-slate-700"
+        />
+        <StatCard
+          label="Terbesar"
+          value={largest ? formatCurrency(largest.amount) : "-"}
+          subValue={largestCat?.category.name}
+          icon={Sparkles}
+          iconBg="bg-slate-100"
+          iconColor="text-slate-700"
+        />
       </div>
 
       {/* ── Daily Bar Chart ── */}
       {dailyChartData.length > 0 && (
         <div className="fun-card mb-4 p-5">
-          <p className="mb-3 text-[11px] font-black uppercase tracking-wider text-[#9AA8C8]">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">
             Pengeluaran Harian
           </p>
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dailyChartData} barCategoryGap="25%">
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(168,200,232,0.4)" />
-                <XAxis dataKey="day" tick={{ fontSize: 10, fill: "#9AA8C8", fontWeight: 700 }} axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(226, 232, 240, 0.6)" />
+                <XAxis dataKey="day" tick={{ fontSize: 10, fill: "#94A3B8", fontWeight: 600 }} axisLine={false} tickLine={false} />
                 <YAxis hide />
                 <Tooltip
                   formatter={formatTooltipValue}
                   labelFormatter={(day) => `Tanggal ${day}`}
                   contentStyle={tooltipStyle}
-                  cursor={{ fill: "rgba(26,43,107,0.05)" }}
+                  cursor={{ fill: "rgba(15, 23, 42, 0.04)" }}
                 />
-                <Bar dataKey="total" fill="#1A2B6B" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="total" fill="#0F172A" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -154,7 +197,7 @@ export default function ReportsPage() {
       {/* ── Category Donut ── */}
       {categorySpending.length > 0 && (
         <div className="fun-card mb-4 p-5">
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">
             Porsi per Kategori
           </p>
           <div className="flex items-center gap-5">
@@ -169,30 +212,24 @@ export default function ReportsPage() {
                     paddingAngle={4}
                     strokeWidth={0}
                   >
-                    {categorySpending.slice(0, 6).map((entry, i) => (
-                      <Cell key={i} fill={entry.category.color} />
+                    {categorySpending.slice(0, 6).map((_, i) => (
+                      <Cell key={i} fill={MONO_SHADES[i % MONO_SHADES.length]} />
                     ))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="flex-1 space-y-2">
-              {categorySpending.slice(0, 6).map((item) => (
+              {categorySpending.slice(0, 6).map((item, idx) => (
                 <div key={item.category.id} className="flex items-center gap-2">
                   <div
-                    className="h-3 w-3 shrink-0 rounded-full"
-                    style={{ backgroundColor: item.category.color }}
+                    className="h-2.5 w-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: MONO_SHADES[idx % MONO_SHADES.length] }}
                   />
-                  <span className="flex-1 truncate text-xs font-semibold text-slate-600">
+                  <span className="flex-1 truncate text-xs font-semibold text-slate-700">
                     {item.category.name}
                   </span>
-                  <span
-                    className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black"
-                    style={{
-                      backgroundColor: item.category.color + "18",
-                      color: item.category.color,
-                    }}
-                  >
+                  <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums bg-slate-100 text-slate-800">
                     {item.percentage}%
                   </span>
                 </div>
@@ -202,19 +239,19 @@ export default function ReportsPage() {
         </div>
       )}
 
-      {/* ── Monthly Comparison ── */}
+      {/* ── Monthly Comparison (6 Months) ── */}
       {monthlyComparison.some((m) => m.total > 0) && (
         <div className="fun-card mb-4 p-5">
-          <p className="mb-3 text-[11px] font-black uppercase tracking-wider text-[#9AA8C8]">
-            6 Bulan Terakhir
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            Tren 6 Bulan Terakhir
           </p>
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyComparison} barCategoryGap="25%">
-                <XAxis dataKey="label" tick={{ fontSize: 10, fill: "#9AA8C8", fontWeight: 700 }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="label" tick={{ fontSize: 10, fill: "#94A3B8", fontWeight: 600 }} axisLine={false} tickLine={false} />
                 <YAxis hide />
-                <Tooltip formatter={formatTooltipValue} contentStyle={tooltipStyle} cursor={{ fill: "rgba(168,200,232,0.1)" }} />
-                <Bar dataKey="total" fill="#A8C8E8" radius={[8, 8, 0, 0]} />
+                <Tooltip formatter={formatTooltipValue} contentStyle={tooltipStyle} cursor={{ fill: "rgba(15, 23, 42, 0.04)" }} />
+                <Bar dataKey="total" fill="#475569" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -223,9 +260,12 @@ export default function ReportsPage() {
 
       {monthTransactions.length === 0 && (
         <div className="fun-card mt-8 p-10 text-center">
-          <p className="text-sm font-black" style={{ color: "#1A2B6B" }}>Belum ada data bulan ini</p>
-          <p className="mt-1 text-xs font-semibold text-[#9AA8C8]">
-            Pilih bulan lain atau catat transaksi baru
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+            <BarChart3 className="h-6 w-6" />
+          </div>
+          <p className="text-sm font-bold text-slate-900">Belum ada data bulan ini</p>
+          <p className="mt-1 text-xs font-semibold text-slate-400">
+            Pilih bulan lain atau catat transaksi baru dengan tombol + di kanan bawah
           </p>
         </div>
       )}
@@ -237,31 +277,34 @@ function StatCard({
   label,
   value,
   subValue,
-  color,
-  bg,
+  icon: Icon,
+  iconBg,
+  iconColor,
 }: {
   label: string;
   value: string;
   subValue?: string;
-  color: string;
-  bg: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  iconBg: string;
+  iconColor: string;
 }) {
   return (
-    <div
-      className="rounded-[var(--radius)] p-4 border-2"
-      style={{ backgroundColor: bg, borderColor: color + "30" }}
-    >
-      <div
-        className="mb-1.5 text-[10px] font-black uppercase tracking-wider"
-        style={{ color }}
-      >
-        {label}
+    <div className="fun-card p-4">
+      <div className="mb-2 flex items-center gap-2">
+        <div className={`flex h-8 w-8 items-center justify-center rounded-xl ${iconBg}`}>
+          <Icon className={`h-4 w-4 ${iconColor}`} strokeWidth={2.5} />
+        </div>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+          {label}
+        </span>
       </div>
-      <div className="text-base font-black tabular-nums" style={{ color: "#1A2B6B" }}>
+      <div className="text-base sm:text-lg font-extrabold tabular-nums tracking-tight text-slate-900">
         {value}
       </div>
       {subValue && (
-        <div className="mt-0.5 text-xs font-semibold text-[#9AA8C8] truncate">{subValue}</div>
+        <div className="mt-0.5 text-xs font-semibold text-slate-400 truncate">
+          {subValue}
+        </div>
       )}
     </div>
   );

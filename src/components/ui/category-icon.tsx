@@ -148,7 +148,7 @@ interface CategoryIconProps {
 export function CategoryIcon({
   icon,
   className = "h-5 w-5",
-  color = "#7C3AED",
+  color = "#0F172A",
 }: CategoryIconProps) {
   const key = (icon || "").trim();
   const IconComponent = CATEGORY_ICON_MAP[key] || CATEGORY_ICON_MAP[key.toLowerCase()] || Package;

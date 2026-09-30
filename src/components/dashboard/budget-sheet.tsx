@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { X, Target } from "lucide-react";
 import { formatAmountInput, parseAmountInput, cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings-store";
@@ -14,23 +14,32 @@ interface BudgetSheetProps {
 }
 
 export function BudgetSheet({ open, onOpenChange, onSuccess }: BudgetSheetProps) {
+  if (!open) return null;
+
+  return (
+    <BudgetSheetModal onOpenChange={onOpenChange} onSuccess={onSuccess} />
+  );
+}
+
+function BudgetSheetModal({
+  onOpenChange,
+  onSuccess,
+}: {
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+}) {
   const settings = useSettingsStore((s) => s.settings);
   const setMonthlyBudget = useSettingsStore((s) => s.setMonthlyBudget);
   const { data: session } = useSession();
 
-  const [rawAmount, setRawAmount] = useState<number>(0);
+  const [rawAmount, setRawAmount] = useState<number>(settings.monthlyBudget || 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (open) {
-      setRawAmount(settings.monthlyBudget || 0);
-      const timer = setTimeout(() => inputRef.current?.focus(), 250);
-      return () => clearTimeout(timer);
-    }
-  }, [open, settings.monthlyBudget]);
-
-  if (!open) return null;
+    const timer = setTimeout(() => inputRef.current?.focus(), 150);
+    return () => clearTimeout(timer);
+  }, []);
 
   const formatted = rawAmount > 0 ? formatAmountInput(rawAmount) : "";
 
@@ -94,7 +103,7 @@ export function BudgetSheet({ open, onOpenChange, onSuccess }: BudgetSheetProps)
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-800">
               <Target className="h-5 w-5" />
             </div>
             <div>
@@ -153,7 +162,7 @@ export function BudgetSheet({ open, onOpenChange, onSuccess }: BudgetSheetProps)
                   className={cn(
                     "rounded-xl border py-2 text-xs font-bold transition-all active:scale-95 cursor-pointer",
                     rawAmount === val
-                      ? "border-violet-600 bg-violet-50 text-violet-700 shadow-xs"
+                      ? "border-slate-900 bg-slate-900 text-white shadow-xs"
                       : "border-slate-200 bg-slate-50/60 text-slate-600 hover:bg-slate-100"
                   )}
                 >
@@ -167,9 +176,9 @@ export function BudgetSheet({ open, onOpenChange, onSuccess }: BudgetSheetProps)
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-2xl bg-violet-600 py-3.5 text-sm font-extrabold text-white shadow-md shadow-violet-500/20 hover:bg-violet-700 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-60"
+            className="w-full h-[52px] rounded-full bg-slate-900 text-white font-bold hover:bg-black active:scale-[0.98] transition-all cursor-pointer disabled:opacity-60"
           >
-            {isSubmitting ? "Menyimpan..." : "Simpan"}
+            {isSubmitting ? "Menyimpan..." : "Simpan Anggaran"}
           </button>
         </form>
       </div>

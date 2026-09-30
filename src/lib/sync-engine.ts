@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase/client";
 import { db } from "@/lib/db";
-import type { Transaction } from "@/types/transaction";
+import type { Transaction, PaymentMethod } from "@/types/transaction";
 import type { Wallet, WalletType } from "@/types/wallet";
 import type { Settings } from "@/types/settings";
 import { DEFAULT_SETTINGS } from "@/types/settings";
@@ -496,7 +496,7 @@ export const syncEngine = {
             note: decryptedNote || undefined,
             date: remote.date,
             paymentMethod: remote.payment_method && !remote.payment_method.startsWith("w:")
-              ? (remote.payment_method as any)
+              ? (remote.payment_method as PaymentMethod)
               : undefined,
             createdAt: remote.created_at,
             updatedAt: remote.updated_at,
@@ -535,7 +535,7 @@ export const syncEngine = {
             id: DEFAULT_SETTINGS.id,
             currency: remoteSettings.currency || "IDR",
             monthlyBudget: remoteBudget,
-            defaultPaymentMethod: (remoteSettings.default_payment_method as any) || "cash",
+            defaultPaymentMethod: (remoteSettings.default_payment_method as PaymentMethod) || "cash",
             createdAt: remoteSettings.created_at || new Date().toISOString(),
             updatedAt: remoteSettings.updated_at || new Date().toISOString(),
           });

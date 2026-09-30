@@ -2,7 +2,7 @@
 
 import { formatCurrency, cn } from "@/lib/utils";
 import type { BudgetStatus } from "@/lib/calculations/budget-calculations";
-import { SlidersHorizontal, TrendingUp, TrendingDown } from "lucide-react";
+import { SlidersHorizontal, ArrowDownLeft, ArrowUpRight, TrendingUp, TrendingDown } from "lucide-react";
 
 interface MonthlySummaryCardProps {
   spending: number;
@@ -15,13 +15,6 @@ interface MonthlySummaryCardProps {
   onEditBudget?: () => void;
 }
 
-function getMoodEmoji(netCashFlow: number, spending: number, budget?: number): string {
-  if (netCashFlow > 0) return "😄";
-  if (netCashFlow === 0) return "😐";
-  if (budget && spending > budget) return "😱";
-  return "😅";
-}
-
 export function MonthlySummaryCard({
   spending,
   income,
@@ -29,102 +22,82 @@ export function MonthlySummaryCard({
   budget,
   remaining,
   percentage,
-  status,
   onEditBudget,
 }: MonthlySummaryCardProps) {
   const clampedPercentage = percentage !== null ? Math.min(percentage, 100) : 0;
   const isPositiveFlow = netCashFlow >= 0;
-  const moodEmoji = getMoodEmoji(netCashFlow, spending, budget);
-
-  // Lavender palette budget bar colors
-  const barColor =
-    status === "exceeded"
-      ? "bg-rose-500"
-      : status === "warning"
-      ? "bg-amber-400"
-      : "bg-emerald-500";
-
-  const barLabelColor =
-    status === "exceeded" ? "#EF4444" : status === "warning" ? "#D97706" : "#10B981";
 
   return (
     <div className="space-y-3">
-      {/* ── Hero — deep violet gradient ── */}
-      <div
-        className="rounded-[var(--radius)] p-5 text-white relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #1E1B4B 0%, #312E81 60%, #4C1D95 100%)",
-          boxShadow: "0 8px 28px rgba(30,27,75,0.35)",
-        }}
-      >
-        {/* Decorative blobs */}
-        <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-violet-400 opacity-15" />
-        <div className="absolute right-8 -bottom-8 h-20 w-20 rounded-full bg-purple-300 opacity-10" />
-
-        <div className="relative flex items-start justify-between">
+      {/* ── Hero — Clean White Card ── */}
+      <div className="fun-card p-5 transition-all">
+        <div className="flex items-start justify-between">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/55 mb-1">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
               Arus Kas Bulan Ini
             </p>
-            <p className="text-3xl font-extrabold tabular-nums tracking-tight">
+            <p className="text-3xl font-extrabold tabular-nums tracking-tight text-slate-900">
               {isPositiveFlow ? "+" : "-"}{formatCurrency(Math.abs(netCashFlow))}
             </p>
-            <div className="mt-1.5">
-              <span
-                className="inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white"
-                style={{
-                  backgroundColor: isPositiveFlow
-                    ? "rgba(110,231,183,0.25)"
-                    : "rgba(248,113,113,0.25)",
-                }}
-              >
-                {isPositiveFlow ? "Keuangan sehat 👍" : "Jaga pengeluaran ya"}
+            <div className="mt-2.5">
+              <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide bg-slate-100 text-slate-700 border border-slate-200/80">
+                {isPositiveFlow ? (
+                  <>
+                    <TrendingUp className="h-3.5 w-3.5 text-slate-900" />
+                    <span>Surplus</span>
+                  </>
+                ) : (
+                  <>
+                    <TrendingDown className="h-3.5 w-3.5 text-slate-600" />
+                    <span>Defisit</span>
+                  </>
+                )}
               </span>
             </div>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <span className="text-4xl leading-none" role="img">{moodEmoji}</span>
+          <div>
             {onEditBudget && (
               <button
                 onClick={onEditBudget}
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors cursor-pointer"
                 aria-label="Atur anggaran"
+                title="Atur anggaran"
               >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
+                <SlidersHorizontal className="h-4 w-4" />
               </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Income / Expense Split ── */}
+      {/* ── Income / Expense Split Metric ── */}
       <div className="grid grid-cols-2 gap-3">
-        {/* Income — violet icon */}
-        <div className="pastel-card p-4">
+        {/* Income Card */}
+        <div className="fun-card p-4 transition-all">
           <div className="flex items-center gap-2 mb-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-100">
-              <TrendingUp className="h-4 w-4 text-violet-500" strokeWidth={2.5} />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100">
+              <ArrowDownLeft className="h-4 w-4 text-slate-900" strokeWidth={2.5} />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
               Pemasukan
             </span>
           </div>
-          <p className="text-base font-bold tabular-nums tracking-tight text-emerald-600">
+          <p className="text-base font-extrabold tabular-nums tracking-tight text-slate-900">
             {formatCurrency(income)}
           </p>
         </div>
 
-        {/* Expense — violet icon */}
-        <div className="pastel-card p-4">
+        {/* Expense Card */}
+        <div className="fun-card p-4 transition-all">
           <div className="flex items-center gap-2 mb-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-100">
-              <TrendingDown className="h-4 w-4 text-violet-500" strokeWidth={2.5} />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100">
+              <ArrowUpRight className="h-4 w-4 text-slate-600" strokeWidth={2.5} />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
               Pengeluaran
             </span>
           </div>
-          <p className="text-base font-bold tabular-nums tracking-tight text-rose-500">
+          <p className="text-base font-extrabold tabular-nums tracking-tight text-slate-900">
             {formatCurrency(spending)}
           </p>
         </div>
@@ -134,32 +107,23 @@ export function MonthlySummaryCard({
       {budget !== undefined && budget > 0 ? (
         <div
           onClick={onEditBudget}
-          className="pastel-card px-4 py-3.5 cursor-pointer hover:shadow-md transition-all"
+          className="fun-card px-4 py-3.5 cursor-pointer hover:border-slate-300 transition-all active:scale-[0.99]"
         >
-          <div className="flex items-center justify-between mb-2.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Anggaran {formatCurrency(budget)}
             </span>
-            <span
-              className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold"
-              style={{
-                backgroundColor:
-                  status === "exceeded" ? "#FEF2F2"
-                  : status === "warning" ? "#FFFBEB"
-                  : "#ECFDF5",
-                color: barLabelColor,
-              }}
-            >
+            <span className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold bg-slate-100 text-slate-900">
               {percentage}%
             </span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-slate-100">
             <div
-              className={cn("budget-bar h-full rounded-full", barColor)}
+              className="budget-bar h-full rounded-full bg-slate-900"
               style={{ width: `${clampedPercentage}%` }}
             />
           </div>
-          <p className="mt-2 text-right text-xs font-bold" style={{ color: barLabelColor }}>
+          <p className="mt-2 text-right text-xs font-semibold text-slate-600">
             {remaining !== null && remaining >= 0
               ? `Sisa ${formatCurrency(remaining)}`
               : remaining !== null
@@ -170,7 +134,7 @@ export function MonthlySummaryCard({
       ) : (
         <button
           onClick={onEditBudget}
-          className="flex w-full items-center justify-between rounded-[var(--radius)] border-2 border-dashed border-violet-200 px-4 py-3 text-sm font-bold text-slate-400 hover:border-violet-400 hover:text-violet-600 transition-all"
+          className="flex w-full items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-white/80 px-4 py-3 text-xs font-bold text-slate-600 hover:border-slate-900 hover:text-slate-900 transition-all cursor-pointer"
         >
           <span>Atur target anggaran bulanan</span>
           <SlidersHorizontal className="h-4 w-4" />

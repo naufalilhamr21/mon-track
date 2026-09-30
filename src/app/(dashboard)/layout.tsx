@@ -85,8 +85,10 @@ export default function DashboardLayout({
       setEditTransaction(e.detail);
       setTransactionOpen(true);
     };
+    window.addEventListener("montrack:edit-transaction", handleEditEvent as EventListener);
     window.addEventListener("montrac:edit-transaction", handleEditEvent as EventListener);
     return () => {
+      window.removeEventListener("montrack:edit-transaction", handleEditEvent as EventListener);
       window.removeEventListener("montrac:edit-transaction", handleEditEvent as EventListener);
     };
   }, []);
@@ -100,25 +102,25 @@ export default function DashboardLayout({
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center bg-aurora-header">
         <div className="text-center">
-          {/* Logo — no emoji */}
+          {/* Logo container with aurora glow */}
           <div className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center">
-            <div className="absolute inset-0 rounded-[1.5rem] bg-violet-200 opacity-40 blur-lg" />
+            <div className="absolute inset-0 rounded-[1.5rem] bg-blue-300 opacity-30 blur-lg" />
             <Image
               src="/icons/logo-baru.png"
-              alt="JagaJajan"
+              alt="MonTrack"
               width={80}
               height={80}
               className="relative rounded-[1.5rem] object-contain animate-float"
-              style={{ boxShadow: "0 8px 24px rgba(124,58,237,0.25)" }}
+              style={{ boxShadow: "0 8px 24px rgba(37,99,235,0.2)" }}
               priority
             />
           </div>
-          <p className="text-base font-extrabold text-[#1E1B4B] mb-4">
-            JagaJajan
+          <p className="text-base font-black text-slate-800 tracking-tight mb-4">
+            MonTrack
           </p>
           <div
             className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
-            style={{ borderColor: "#7C3AED", borderTopColor: "transparent" }}
+            style={{ borderColor: "#2563EB", borderTopColor: "transparent" }}
           />
         </div>
       </div>
@@ -137,7 +139,7 @@ export default function DashboardLayout({
         }}
         editTransaction={editTransaction}
         onSuccess={() => {
-          const msg = editTransaction ? "Transaksi berhasil diperbarui ✓" : "Transaksi tersimpan ✓";
+          const msg = editTransaction ? "Transaksi berhasil diperbarui" : "Transaksi tersimpan";
           showToast(msg, "success");
           loadTransactions();
           loadWallets();

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { RefreshCw } from "lucide-react";
+import Link from "next/link";
+import { Search, RefreshCw } from "lucide-react";
 import { useTransactionStore } from "@/stores/transaction-store";
 import { useCategoryStore } from "@/stores/category-store";
 import { useSettingsStore } from "@/stores/settings-store";
@@ -29,22 +30,13 @@ import { cn } from "@/lib/utils";
 import { syncEngine } from "@/lib/sync-engine";
 import type { Transaction } from "@/types/transaction";
 
-function getGreetingEmoji(): string {
-  const h = new Date().getHours();
-  if (h < 5) return "🌙";
-  if (h < 12) return "☀️";
-  if (h < 17) return "🌤️";
-  if (h < 21) return "🌅";
-  return "🌙";
-}
-
 function getGreetingText(): string {
   const h = new Date().getHours();
-  if (h < 5) return "Malam";
-  if (h < 12) return "Pagi";
-  if (h < 17) return "Siang";
-  if (h < 21) return "Sore";
-  return "Malam";
+  if (h < 5) return "malam";
+  if (h < 12) return "pagi";
+  if (h < 17) return "siang";
+  if (h < 21) return "sore";
+  return "malam";
 }
 
 export default function DashboardPage() {
@@ -69,7 +61,7 @@ export default function DashboardPage() {
       const res = await syncEngine.syncAll(userIdentifier);
       await Promise.all([loadTransactions(), loadSettings()]);
       if (res.success) {
-        showToast("Data tersinkronkan ✓", "success");
+        showToast("Data tersinkronkan", "success");
       } else {
         showToast(`Gagal sinkron: ${res.error || "Cek koneksi"}`, "error");
       }
@@ -101,45 +93,62 @@ export default function DashboardPage() {
     .slice(0, 5);
 
   const firstName = session?.user?.name?.split(" ")[0] ?? "";
-  const monthName = new Intl.DateTimeFormat("id-ID", { month: "long" }).format(now);
+  const fullDateFormatted = new Intl.DateTimeFormat("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(now);
 
   return (
     <div className="min-h-dvh pb-8">
-      {/* ── Playful Header ── */}
-      <div className="bg-playful-header px-4 pt-6 pb-8">
+      {/* ── Green-White-Blue Atmospheric Aurora Header ── */}
+      <div className="bg-aurora-header px-4 pt-5 pb-7">
         <div className="mx-auto max-w-lg">
-          {/* Top row: greeting + sync */}
-          <div className="flex items-center justify-between mb-1">
-            <div>
-              <p className="text-xs font-black text-[#9AA8C8] uppercase tracking-wider">
-                {monthName} {currentYear}
-              </p>
-              <h1 className="text-xl font-black" style={{ color: "#1A2B6B" }}>
-                {getGreetingEmoji()} Halo{firstName ? `, ${firstName}` : ""}!
-              </h1>
-              <p className="text-xs font-semibold text-[#5A6A9A] mt-0.5">
-                Selamat {getGreetingText()}, semangat mengelola jajan! 💪
-              </p>
-            </div>
-
-            <button
-              onClick={handleRefresh}
-              disabled={isSyncing}
-              className={cn(
-                "flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-black transition-all border-2 cursor-pointer disabled:opacity-60",
-                isSyncing
-                  ? "border-[#A8C8E8] bg-[#E0F0FB] text-[#2A6BA8]"
-                  : "border-[rgba(168,200,232,0.5)] bg-white text-[#9AA8C8] hover:border-[#1A2B6B] hover:text-[#1A2B6B]"
-              )}
-              aria-label="Segarkan data"
-              id="btn-refresh-dashboard"
+          {/* 1. Utility Controls Row */}
+          <div className="flex items-center justify-between mb-4">
+            <Link
+              href="/settings"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-xs text-slate-900 font-bold text-sm transition-transform active:scale-95"
+              title="Pengaturan Akun"
             >
-              <RefreshCw
-                className={cn("h-3.5 w-3.5", isSyncing && "animate-spin")}
-              />
-              <span>{isSyncing ? "Sinkron..." : "Segarkan"}</span>
-            </button>
+              {firstName ? firstName.slice(0, 2).toUpperCase() : "MT"}
+            </Link>
+
+            <div className="flex items-center gap-2">
+              <Link
+                href="/transactions"
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-xs text-slate-600 hover:text-slate-900 transition-transform active:scale-95"
+                aria-label="Cari transaksi"
+                title="Pencarian"
+              >
+                <Search className="h-5 w-5" strokeWidth={2} />
+              </Link>
+              <button
+                onClick={handleRefresh}
+                disabled={isSyncing}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-xs text-slate-600 hover:text-slate-900 transition-transform active:scale-95 cursor-pointer disabled:opacity-60"
+                aria-label="Segarkan data"
+                title="Sinkronisasi Cloud"
+              >
+                <RefreshCw
+                  className={cn("h-5 w-5", isSyncing && "animate-spin text-slate-900")}
+                  strokeWidth={2}
+                />
+              </button>
+            </div>
           </div>
+
+          {/* 2. Date / Eyebrow */}
+          <p className="text-xs font-semibold text-slate-500 capitalize mb-0.5">
+            {fullDateFormatted}
+          </p>
+
+          {/* 3. Good morning / User Name (No Emoji) */}
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            Selamat {getGreetingText()},{" "}
+            <span className="font-extrabold text-slate-900">{firstName || "Kawan"}</span>
+          </h1>
         </div>
       </div>
 
@@ -184,7 +193,7 @@ export default function DashboardPage() {
         open={budgetOpen}
         onOpenChange={setBudgetOpen}
         onSuccess={() => {
-          showToast("Anggaran bulanan berhasil disimpan ✓", "success");
+          showToast("Anggaran bulanan berhasil disimpan", "success");
         }}
       />
 

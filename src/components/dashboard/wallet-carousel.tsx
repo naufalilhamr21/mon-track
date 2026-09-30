@@ -24,39 +24,32 @@ export function WalletCarousel() {
 
   return (
     <>
-      {/* Total Balance — violet hero */}
-      <div
-        className="rounded-2xl p-4 text-white relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%)",
-          boxShadow: "0 8px 24px rgba(124,58,237,0.3)",
-        }}
-      >
-        <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-white opacity-10" />
-
-        <div className="relative flex items-center justify-between">
+      {/* Total Balance — Clean White Card */}
+      <div className="fun-card p-4.5 transition-all">
+        <div className="flex items-center justify-between">
           <div>
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <WalletCards className="h-3.5 w-3.5 text-white/60" strokeWidth={2} />
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/60">
-                Total Aset
+            <div className="flex items-center gap-1.5 mb-1">
+              <WalletCards className="h-3.5 w-3.5 text-slate-500" strokeWidth={2} />
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Total Aset / Dompet
               </p>
             </div>
-            <p className="text-2xl font-bold tabular-nums tracking-tight text-white">
+            <p className="text-2xl font-extrabold tabular-nums tracking-tight text-slate-900">
               {formatCurrency(totalBalance)}
             </p>
           </div>
           <button
             onClick={() => setAddOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 transition-colors active:scale-95 cursor-pointer"
             aria-label="Tambah dompet"
+            title="Tambah dompet"
           >
             <Plus className="h-5 w-5" strokeWidth={2.5} />
           </button>
         </div>
       </div>
 
-      {/* Wallet chips — all violet icon bg */}
+      {/* Wallet chips — Monochrome clean cards */}
       <div className="flex gap-2.5 overflow-x-auto scrollbar-none pb-1">
         {wallets.map((wallet) => {
           const balance = getWalletBalance(wallet.id, transactions);
@@ -67,26 +60,26 @@ export function WalletCarousel() {
               key={wallet.id}
               type="button"
               onClick={() => setEditWallet(wallet)}
-              className="group shrink-0 flex flex-col gap-2 rounded-2xl px-4 py-3 min-w-[8rem] bg-white transition-all hover:shadow-md active:scale-[0.97] border border-slate-100"
+              className="group shrink-0 flex flex-col gap-2 rounded-2xl px-4 py-3 min-w-[8.5rem] bg-white transition-all hover:border-slate-400 active:scale-[0.98] border border-slate-200/80 cursor-pointer shadow-xs text-left"
             >
               <div className="flex items-center justify-between w-full">
-                {/* Icon bg — violet */}
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-100">
-                  <CategoryIcon icon={wallet.icon} color="#7C3AED" className="h-4 w-4" />
+                {/* Icon container */}
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100">
+                  <CategoryIcon icon={wallet.icon} color="#0F172A" className="h-4 w-4" />
                 </div>
                 {wallet.isDefault && (
-                  <span className="text-[8px] font-bold rounded-full px-1.5 py-0.5 bg-violet-100 text-violet-600">
+                  <span className="text-[9px] font-bold rounded-full px-2 py-0.5 bg-slate-100 text-slate-800 border border-slate-200">
                     Utama
                   </span>
                 )}
               </div>
               <div>
-                <p className="text-[11px] font-bold truncate max-w-[6rem] text-slate-600">
+                <p className="text-[11px] font-medium truncate max-w-[6.5rem] text-slate-500">
                   {wallet.name}
                 </p>
                 <p className={cn(
                   "text-sm font-bold tabular-nums",
-                  isNegative ? "text-rose-500" : "text-slate-800"
+                  isNegative ? "text-slate-500" : "text-slate-900"
                 )}>
                   {isNegative ? "-" : ""}{formatCurrency(Math.abs(balance))}
                 </p>

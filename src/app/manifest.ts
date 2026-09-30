@@ -2,13 +2,13 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "JagaJajan",
-    short_name: "JagaJajan",
-    description: "Catat jajan harianmu dengan gaya — kelola dompet, pemasukan, dan pengeluaran",
+    name: "MonTrack",
+    short_name: "MonTrack",
+    description: "Modern Personal Finance & Multi-Wallet Expense/Income Tracker",
     start_url: "/",
     display: "standalone",
-    background_color: "#F5F5FA",
-    theme_color: "#7C3AED",
+    background_color: "#F8FAFC",
+    theme_color: "#2563EB",
     orientation: "portrait",
     categories: ["finance", "utilities"],
     icons: [

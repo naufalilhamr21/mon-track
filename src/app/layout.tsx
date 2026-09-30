@@ -12,9 +12,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "JagaJajan",
+  title: "MonTrack — Personal Finance Tracker",
   description:
-    "Catat jajan harianmu dengan gaya — kelola dompet, pemasukan, dan pengeluaran dalam satu app",
+    "Catat keuangan harianmu dengan gaya — kelola dompet, pemasukan, dan pengeluaran dalam satu aplikasi",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icons/logo-baru.png",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "JagaJajan",
+    title: "MonTrack",
   },
 };
 
@@ -32,7 +32,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#DDD6FE",
+  themeColor: "#E0F2FE",
 };
 
 export default function RootLayout({

@@ -15,7 +15,7 @@ export function AmountInput({ value, onChange, error, type = "expense" }: Amount
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => inputRef.current?.focus(), 300);
+    const timer = setTimeout(() => inputRef.current?.focus(), 250);
     return () => clearTimeout(timer);
   }, []);
 
@@ -33,25 +33,17 @@ export function AmountInput({ value, onChange, error, type = "expense" }: Amount
 
   const isIncome = type === "income";
 
-  // Unified: violet for expense, emerald for income — but both clean/minimal
-  const label = isIncome ? "NOMINAL PEMASUKAN" : "NOMINAL PENGELUARAN";
-  const labelColor = isIncome ? "#10B981" : "#7C3AED";
-  const amountColor = value === 0 ? "#CBD5E1" : isIncome ? "#10B981" : "#7C3AED";
-
   return (
-    <div className="w-full rounded-2xl bg-violet-50 py-5 px-4 text-center"
-      style={isIncome ? { backgroundColor: "#F0FDF4" } : { backgroundColor: "#F5F3FF" }}
-    >
-      <p
-        className="mb-2 text-[10px] font-bold tracking-widest"
-        style={{ color: labelColor }}
-      >
-        {label}
+    <div className="w-full rounded-2xl py-5 px-4 text-center border bg-slate-50 border-slate-100 transition-all">
+      <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        {isIncome ? "Nominal Pemasukan" : "Nominal Pengeluaran"}
       </p>
       <div className="flex w-full items-baseline justify-center gap-1.5">
         <span
-          className="text-xl font-bold shrink-0"
-          style={{ color: amountColor }}
+          className={cn(
+            "text-xl font-bold shrink-0",
+            value === 0 ? "text-slate-300" : "text-slate-900"
+          )}
         >
           Rp
         </span>
@@ -63,19 +55,21 @@ export function AmountInput({ value, onChange, error, type = "expense" }: Amount
           onChange={handleChange}
           placeholder="0"
           className={cn(
-            "w-full max-w-[260px] border-none bg-transparent text-center font-bold tabular-nums tracking-tight focus:outline-none",
-            fontSizeClass
+            "w-full max-w-[260px] border-none bg-transparent text-center font-extrabold tabular-nums tracking-tight focus:outline-none",
+            fontSizeClass,
+            value === 0
+              ? "text-slate-300 placeholder:text-slate-300"
+              : "text-slate-900"
           )}
-          style={{ color: amountColor }}
           autoComplete="off"
         />
       </div>
       {value === 0 && (
-        <p className="mt-1.5 text-[10px] text-slate-400">
-          Ketuk angka untuk mengisi nominal
+        <p className="mt-1.5 text-[10px] font-medium text-slate-400">
+          Ketuk untuk memasukkan nominal
         </p>
       )}
-      {error && <p className="mt-1 text-xs font-bold text-rose-500">{error}</p>}
+      {error && <p className="mt-1.5 text-xs font-bold text-slate-900 bg-slate-200/70 rounded-full px-3 py-0.5 inline-block">{error}</p>}
     </div>
   );
 }

@@ -5,15 +5,6 @@ import type { Category } from "@/types/category";
 import { cn } from "@/lib/utils";
 import { CategoryIcon } from "@/components/ui/category-icon";
 
-// All tiles use violet bg — clean and unified
-const TILE_COLORS = [
-  "#EDE9FE", // violet
-  "#EDE9FE",
-  "#EDE9FE",
-  "#EDE9FE",
-  "#EDE9FE",
-];
-
 interface CategoryPickerProps {
   categories: Category[];
   selected: string;
@@ -31,20 +22,18 @@ export function CategoryPicker({ categories, selected, onSelect }: CategoryPicke
             key={category.id}
             type="button"
             onClick={() => onSelect(category.id)}
-            style={
-              isSelected
-                ? { border: "1.5px solid #7C3AED" }
-                : { border: "1.5px solid transparent" }
-            }
             className={cn(
-              "relative flex flex-col items-center justify-center rounded-xl py-3 px-1 transition-all active:scale-95 bg-violet-50/70",
+              "relative flex flex-col items-center justify-center rounded-2xl py-2.5 px-1 border transition-all active:scale-95 cursor-pointer",
+              isSelected
+                ? "border-slate-900 bg-slate-900 text-white shadow-xs"
+                : "border-slate-100 bg-slate-50/60 hover:bg-slate-100/60 text-slate-600"
             )}
           >
-            {/* Icon — always violet */}
-            <div className="mb-1.5 flex h-8 w-8 items-center justify-center">
+            {/* Icon */}
+            <div className="mb-1 flex h-8 w-8 items-center justify-center">
               <CategoryIcon
                 icon={category.icon}
-                color={isSelected ? "#7C3AED" : "#8B5CF6"}
+                color={isSelected ? "#FFFFFF" : "#0F172A"}
                 className="h-5 w-5"
               />
             </div>
@@ -98,16 +87,16 @@ function CategoryLabel({
       {isOverflowing ? (
         <div className="animate-marquee-left flex shrink-0">
           <span className={cn("text-[10px] pr-3 shrink-0 whitespace-nowrap font-semibold",
-            isSelected ? "text-violet-700" : "text-slate-500"
+            isSelected ? "text-white font-bold" : "text-slate-600"
           )}>{name}</span>
           <span className={cn("text-[10px] pr-3 shrink-0 whitespace-nowrap font-semibold",
-            isSelected ? "text-violet-700" : "text-slate-500"
+            isSelected ? "text-white font-bold" : "text-slate-600"
           )}>{name}</span>
         </div>
       ) : (
         <span className={cn(
-          "text-[10px] whitespace-nowrap font-semibold",
-          isSelected ? "text-violet-700" : "text-slate-500"
+          "text-[10px] whitespace-nowrap font-semibold truncate",
+          isSelected ? "text-white font-bold" : "text-slate-600"
         )}>
           {name}
         </span>

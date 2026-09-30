@@ -22,7 +22,6 @@ import {
   Smartphone,
   Database,
   Shield,
-  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { syncEngine } from "@/lib/sync-engine";
@@ -61,11 +60,11 @@ export default function SettingsPage() {
     if (result.success) {
       await Promise.all([loadTransactions(), loadWallets(), loadCategories(), loadSettings()]);
       setImportStatus(
-        `✓ Berhasil disinkronkan (${result.count} data transaksi & dompet diproses)`,
+        `Berhasil disinkronkan (${result.count} data transaksi & dompet diproses)`
       );
     } else {
       setImportStatus(
-        `Gagal sinkronisasi: ${result.error || "Cek koneksi internet"}`,
+        `Gagal sinkronisasi: ${result.error || "Cek koneksi internet"}`
       );
     }
   };
@@ -73,7 +72,7 @@ export default function SettingsPage() {
   const handleExportJSON = () => {
     const data = {
       schemaVersion: 2,
-      application: "JagaJajan" as const,
+      application: "MonTrack" as const,
       exportedAt: new Date().toISOString(),
       wallets,
       categories,
@@ -86,7 +85,7 @@ export default function SettingsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `jagajajan-backup-${new Date().toISOString().split("T")[0]}.json`;
+    a.download = `montrack-backup-${new Date().toISOString().split("T")[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -101,6 +100,7 @@ export default function SettingsPage() {
       try {
         const data = JSON.parse(await file.text());
         if (
+          data.application !== "MonTrack" &&
           data.application !== "JagaJajan" &&
           data.application !== "MonTrac" &&
           data.application !== "MoneyTrack" &&
@@ -127,7 +127,7 @@ export default function SettingsPage() {
           loadCategories(),
           loadSettings(),
         ]);
-        setImportStatus("✓ Data berhasil diimpor");
+        setImportStatus("Data berhasil diimpor");
       } catch {
         setImportStatus("Gagal mengimpor data. File tidak valid.");
       }
@@ -163,7 +163,7 @@ export default function SettingsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `montrac-${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `montrack-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -179,29 +179,23 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-lg px-4 pt-6 pb-8">
+    <div className="mx-auto max-w-lg px-4 pt-6 pb-24">
       {/* ── Header ── */}
       <div className="mb-6">
-        <h1 className="text-2xl font-extrabold text-[#0F172A]">Akun</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Akun</h1>
         <p className="text-xs font-semibold text-slate-400 mt-0.5">Kelola data dan preferensi</p>
       </div>
 
       {/* Profile Card */}
-      <div
-        className="fun-card mb-5 p-4 flex items-center gap-4"
-        style={{ background: "linear-gradient(135deg, rgba(196,181,253,0.15) 0%, rgba(196,181,253,0.08) 100%)" }}
-      >
-        <div
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg font-extrabold text-violet-700"
-          style={{ backgroundColor: "rgba(196,181,253,0.25)" }}
-        >
+      <div className="fun-card mb-5 p-4 flex items-center gap-4">
+        <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl text-base font-extrabold text-white bg-slate-900">
           {(session?.user?.name?.[0] ?? "U").toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-base font-extrabold text-[#0F172A]">
+          <div className="truncate text-base font-bold text-slate-900">
             {session?.user?.name ?? "Pengguna"}
           </div>
-          <div className="truncate text-xs font-semibold text-slate-400 mt-0.5">
+          <div className="truncate text-xs font-medium text-slate-400 mt-0.5">
             {session?.user?.email}
           </div>
         </div>
@@ -212,19 +206,16 @@ export default function SettingsPage() {
       <div className="fun-card mb-5 overflow-hidden">
         <button
           onClick={handleInstallClick}
-          className="flex w-full items-center gap-3.5 px-5 py-4 text-left transition-colors hover:bg-violet-50 cursor-pointer"
+          className="flex w-full items-center gap-3.5 px-5 py-4 text-left transition-colors hover:bg-slate-50 cursor-pointer"
           id="btn-install-a2hs"
         >
-          <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
-            style={{ backgroundColor: "rgba(196,181,253,0.25)" }}
-          >
-            <Smartphone className="h-5 w-5 text-violet-600" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100">
+            <Smartphone className="h-5 w-5 text-slate-700" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-[#0F172A]">Akses di Layar Utama</div>
-            <div className="text-xs font-semibold text-slate-400">
-              {isStandalone ? "✓ Sudah terpasang di HP Anda" : "Pasang icon di home screen"}
+            <div className="text-sm font-bold text-slate-900">Akses di Layar Utama</div>
+            <div className="text-xs font-medium text-slate-400 mt-0.5">
+              {isStandalone ? "Sudah terpasang di HP Anda" : "Pasang icon di home screen"}
             </div>
           </div>
           <ChevronRight className="h-4 w-4 text-slate-300" />
@@ -236,17 +227,14 @@ export default function SettingsPage() {
       <div className="fun-card mb-5 overflow-hidden">
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex w-full items-center gap-3.5 px-5 py-4 text-left transition-colors hover:bg-rose-50 cursor-pointer"
+          className="flex w-full items-center gap-3.5 px-5 py-4 text-left transition-colors hover:bg-slate-50 cursor-pointer"
         >
-          <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
-            style={{ backgroundColor: "rgba(239,68,68,0.1)" }}
-          >
-            <LogOut className="h-5 w-5 text-rose-500" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100">
+            <LogOut className="h-5 w-5 text-slate-700" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-rose-500">Keluar dari Akun</div>
-            <div className="text-xs font-semibold text-slate-400">Kamu akan diarahkan ke halaman login</div>
+            <div className="text-sm font-bold text-slate-900">Keluar dari Akun</div>
+            <div className="text-xs font-medium text-slate-400 mt-0.5">Kamu akan diarahkan ke halaman login</div>
           </div>
           <ChevronRight className="h-4 w-4 text-slate-300" />
         </button>
@@ -289,19 +277,16 @@ export default function SettingsPage() {
       </div>
 
       {importStatus && (
-        <div
-          className="mb-5 flex items-center justify-between rounded-[var(--radius)] border-2 px-4 py-3"
-          style={{ borderColor: "#BBF7D0", backgroundColor: "#F0FDF4" }}
-        >
+        <div className="mb-5 flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
           <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-emerald-500" />
-            <span className="text-sm font-bold text-emerald-700">
+            <Shield className="h-4 w-4 text-slate-700" />
+            <span className="text-sm font-bold text-slate-800">
               {importStatus}
             </span>
           </div>
           <button
             onClick={() => setImportStatus(null)}
-            className="text-xs font-bold underline text-emerald-600"
+            className="text-xs font-bold text-slate-600 hover:text-slate-900 cursor-pointer"
           >
             Tutup
           </button>
@@ -309,61 +294,56 @@ export default function SettingsPage() {
       )}
 
       {/* ── Enkripsi & Privasi Info ── */}
-      <div
-        className="mb-5 rounded-[var(--radius)] p-4 flex gap-3"
-        style={{ backgroundColor: "#F0FDF4", border: "1px solid #BBF7D0" }}
-      >
-        <Shield className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" strokeWidth={2.5} />
+      <div className="mb-5 rounded-2xl p-4 flex gap-3 border border-slate-200/80 bg-white">
+        <Shield className="h-5 w-5 text-slate-800 shrink-0 mt-0.5" strokeWidth={2} />
         <div>
-          <p className="text-sm font-extrabold text-emerald-700 mb-0.5">
-            Data kamu terenkripsi &amp; aman
+          <p className="text-sm font-bold text-slate-900 mb-0.5">
+            Data terenkripsi &amp; aman
           </p>
-          <p className="text-xs font-semibold text-emerald-600">
-            Semua data keuangan disimpan secara lokal di perangkat. Saat sinkronisasi ke cloud, data dienkripsi end-to-end sehingga hanya kamu yang bisa membacanya. Kami tidak pernah bisa melihat isi data kamu.
+          <p className="text-xs font-medium text-slate-500 leading-relaxed">
+            Semua data keuangan disimpan secara lokal di perangkat. Saat sinkronisasi ke cloud, data dienkripsi end-to-end (AES-GCM 256-bit) sehingga hanya Anda yang bisa membacanya.
           </p>
         </div>
       </div>
 
       <p className="text-center text-xs font-semibold text-slate-400 mb-5">
-        JagaJajan v1.0 · Made with ❤️
+        MonTrack v1.0
       </p>
 
       {/* Clear Data Bottom Sheet */}
       {showClearConfirm && (
         <div className="fixed inset-0 z-50">
           <div
-            className="animate-fade-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            className="animate-fade-in absolute inset-0 bg-slate-900/50 backdrop-blur-xs"
             onClick={() => setShowClearConfirm(false)}
           />
           <div
-            className="animate-slide-up absolute bottom-0 left-0 right-0 bg-white shadow-2xl"
+            className="animate-slide-up absolute bottom-0 left-0 right-0 bg-white shadow-2xl rounded-t-3xl"
             style={{
-              borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",
               paddingBottom: "env(safe-area-inset-bottom, 1.5rem)",
             }}
           >
             <div className="flex justify-center pt-3 pb-2">
-              <div className="h-1 w-12 rounded-full bg-slate-200" />
+              <div className="h-1 w-10 rounded-full bg-slate-200" />
             </div>
             <div className="px-6 pb-6">
               <div className="text-center mb-5">
-                <Trash2 className="mx-auto h-10 w-10 mb-3 text-rose-500" />
-                <h3 className="text-base font-extrabold text-[#0F172A]">Hapus semua data?</h3>
-                <p className="mt-2 text-sm font-semibold text-slate-500">
+                <Trash2 className="mx-auto h-9 w-9 mb-2 text-slate-700" />
+                <h3 className="text-base font-bold text-slate-900">Hapus semua data?</h3>
+                <p className="mt-1 text-xs font-medium text-slate-500">
                   Semua transaksi lokal akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.
                 </p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-2.5">
                 <button
                   onClick={() => setShowClearConfirm(false)}
-                  className="flex-1 rounded-[var(--radius)] border-2 border-slate-200 py-3.5 text-sm font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="flex-1 rounded-full border border-slate-200 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   onClick={handleClearData}
-                  className="flex-1 rounded-[var(--radius)] py-3.5 text-sm font-extrabold text-white cursor-pointer bg-rose-500"
-                  style={{ boxShadow: "0 4px 14px rgba(239,68,68,0.4)" }}
+                  className="flex-1 rounded-full py-3 text-xs font-bold text-white bg-slate-900 hover:bg-black cursor-pointer"
                 >
                   Hapus Semua
                 </button>
@@ -386,9 +366,9 @@ function SectionTitle({
   icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <h2 className="mb-2.5 px-1 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-      <div className="flex h-5 w-5 items-center justify-center rounded-md bg-violet-100">
-        <Icon className="h-3 w-3 text-violet-600" />
+    <h2 className="mb-2.5 px-1 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+      <div className="flex h-5 w-5 items-center justify-center rounded-md bg-slate-100">
+        <Icon className="h-3 w-3 text-slate-700" />
       </div>
       {children}
     </h2>
@@ -413,25 +393,15 @@ function SettingsRow({
       onClick={onClick}
       className="flex w-full items-center gap-3.5 px-5 py-3.5 text-sm transition-colors hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-b-0"
     >
-      <div
-        className={cn(
-          "flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl",
-          destructive ? "bg-rose-50" : "bg-violet-50"
-        )}
-      >
-        <Icon
-          className={cn(
-            "h-4 w-4",
-            destructive ? "text-rose-500" : "text-violet-600"
-          )}
-        />
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100">
+        <Icon className="h-4 w-4 text-slate-700" />
       </div>
       <div className="flex-1 text-left">
-        <div className={cn("text-sm font-bold", destructive ? "text-rose-500" : "text-[#0F172A]")}>
+        <div className={cn("text-sm font-bold", destructive ? "text-slate-700" : "text-slate-900")}>
           {label}
         </div>
         {sublabel && (
-          <div className="text-xs font-semibold text-slate-400 mt-0.5">{sublabel}</div>
+          <div className="text-xs font-medium text-slate-400 mt-0.5">{sublabel}</div>
         )}
       </div>
       <ChevronRight className="h-4 w-4 text-slate-300" />

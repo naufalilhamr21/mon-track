@@ -7,7 +7,6 @@ import Image from "next/image";
 export function PwaInstallModal() {
   const showIOSModal = usePwaStore((s) => s.showIOSModal);
   const setShowIOSModal = usePwaStore((s) => s.setShowIOSModal);
-  const isIOS = usePwaStore((s) => s.isIOS);
 
   if (!showIOSModal) return null;
 
@@ -35,7 +34,7 @@ export function PwaInstallModal() {
             <div className="relative h-11 w-11 shrink-0 rounded-2xl overflow-hidden shadow-md">
               <Image
                 src="/icons/logo-baru.png"
-                alt="JagaJajan Logo"
+                alt="MonTrack Logo"
                 width={44}
                 height={44}
                 className="h-full w-full object-contain"
@@ -62,30 +61,30 @@ export function PwaInstallModal() {
         {/* Instructions */}
         <div className="space-y-3 mb-6">
           <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-3.5 border border-slate-100">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700 font-bold text-xs">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white font-bold text-xs">
               1
             </div>
             <div className="text-xs text-slate-600">
               Tap ikon <strong>Bagikan / Share</strong>{" "}
-              <Share className="inline h-3.5 w-3.5 text-violet-600 align-text-bottom" />{" "}
+              <Share className="inline h-3.5 w-3.5 text-slate-900 align-text-bottom" />{" "}
               atau <strong>Menu Titik Tiga (⋮)</strong> pada bilah menu browser.
             </div>
           </div>
 
           <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-3.5 border border-slate-100">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700 font-bold text-xs">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white font-bold text-xs">
               2
             </div>
             <div className="text-xs text-slate-600">
               Gulir ke bawah dan pilih opsi{" "}
               <strong>&ldquo;Tambah ke Layar Utama&rdquo;</strong> (
-              <PlusSquare className="inline h-3.5 w-3.5 text-violet-600 align-text-bottom" />
+              <PlusSquare className="inline h-3.5 w-3.5 text-slate-900 align-text-bottom" />
               ).
             </div>
           </div>
 
           <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-3.5 border border-slate-100">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700 font-bold text-xs">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white font-bold text-xs">
               3
             </div>
             <div className="text-xs text-slate-600">
@@ -97,7 +96,7 @@ export function PwaInstallModal() {
         {/* Action Button */}
         <button
           onClick={() => setShowIOSModal(false)}
-          className="w-full rounded-2xl bg-violet-600 py-3.5 text-sm font-extrabold text-white shadow-md shadow-violet-500/20 hover:bg-violet-700 active:scale-[0.98] transition-all cursor-pointer"
+          className="w-full h-[52px] rounded-full bg-slate-900 py-3.5 text-sm font-bold text-white hover:bg-black active:scale-[0.98] transition-all cursor-pointer"
         >
           Mengerti
         </button>

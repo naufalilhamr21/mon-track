@@ -17,56 +17,42 @@ export default function LoginPage() {
     <div
       className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6"
       style={{
-        background: "linear-gradient(180deg, #DDD6FE 0%, #EDE9FE 45%, #F8FAFC 100%)",
+        background: "linear-gradient(135deg, #DCFCE7 0%, #F0FDF4 25%, #FFFFFF 50%, #F0F9FF 75%, #E0F2FE 100%)",
       }}
     >
-      {/* Ambient blobs */}
-      <div className="pointer-events-none absolute -top-20 -left-20 h-80 w-80 rounded-full bg-violet-300 opacity-30 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-16 -right-16 h-64 w-64 rounded-full bg-purple-200 opacity-25 blur-3xl" />
-
       <div className="relative w-full max-w-sm">
-        {/* Hero */}
+        {/* Hero Branding */}
         <div className="text-center mb-8">
-          {/* Logo */}
-          <div className="relative mx-auto mb-5 flex h-24 w-24 items-center justify-center">
-            <div className="absolute inset-0 rounded-[1.75rem] bg-violet-300 opacity-40 blur-xl" />
+          {/* Logo container */}
+          <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center">
             <Image
               src="/icons/logo-baru.png"
-              alt="JagaJajan Logo"
-              width={96}
-              height={96}
-              className="relative rounded-[1.75rem] object-contain animate-float"
-              style={{ boxShadow: "0 12px 32px rgba(124,58,237,0.3)" }}
+              alt="MonTrack Logo"
+              width={80}
+              height={80}
+              className="relative rounded-2xl object-contain shadow-md"
               priority
             />
           </div>
 
-          <h1 className="text-3xl font-extrabold tracking-tight text-[#1E1B4B] mb-1">
-            JagaJajan
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-1">
+            MonTrack
           </h1>
-          <p className="text-sm font-semibold text-violet-600">
-            Kelola jajan harianmu dengan gaya
+          <p className="text-xs font-semibold text-slate-500">
+            Personal Finance &amp; Multi-Wallet Tracker
           </p>
         </div>
 
-        {/* Login Card */}
-        <div
-          className="rounded-[var(--radius-lg)] p-6 mb-4"
-          style={{
-            backgroundColor: "rgba(255,255,255,0.85)",
-            backdropFilter: "blur(16px)",
-            boxShadow: "0 8px 32px rgba(124,58,237,0.12)",
-            border: "1px solid rgba(196,181,253,0.5)",
-          }}
-        >
-          <p className="text-center text-sm font-bold text-slate-600 mb-4">
-            Masuk untuk mulai mencatat 👋
+        {/* Clean Login Card */}
+        <div className="rounded-3xl p-6 mb-4 bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-lg shadow-slate-900/5">
+          <p className="text-center text-sm font-bold text-slate-800 mb-4">
+            Masuk untuk mulai mencatat
           </p>
 
           <button
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full inline-flex items-center justify-center gap-3 rounded-2xl border-2 border-violet-100 bg-white px-6 py-3.5 text-sm font-extrabold text-[#0F172A] transition-all hover:border-violet-400 hover:shadow-md active:scale-95 disabled:opacity-60 cursor-pointer"
+            className="w-full inline-flex items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-900 transition-all hover:bg-slate-50 hover:border-slate-400 active:scale-95 disabled:opacity-60 cursor-pointer shadow-xs"
             id="google-login-button"
           >
             {!isLoading ? (
@@ -81,24 +67,21 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                <div className="h-5 w-5 rounded-full border-2 border-violet-300 border-t-violet-600 animate-spin shrink-0" />
+                <div className="h-5 w-5 rounded-full border-2 border-slate-300 border-t-slate-900 animate-spin shrink-0" />
                 <span>Menghubungkan...</span>
               </>
             )}
           </button>
 
           {/* Encryption assurance */}
-          <div
-            className="mt-4 flex items-start gap-2.5 rounded-xl p-3"
-            style={{ backgroundColor: "#F0FDF4" }}
-          >
-            <Shield className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" strokeWidth={2.5} />
+          <div className="mt-4 flex items-start gap-2.5 rounded-2xl p-3.5 bg-slate-50 border border-slate-200/70">
+            <Shield className="h-4 w-4 text-slate-700 shrink-0 mt-0.5" strokeWidth={2} />
             <div>
-              <p className="text-xs font-extrabold text-emerald-700">
-                Data kamu terenkripsi & aman
+              <p className="text-xs font-bold text-slate-900">
+                Data terenkripsi &amp; privat
               </p>
-              <p className="text-[10px] font-semibold text-emerald-600 mt-0.5">
-                Semua data keuangan disimpan secara lokal di perangkat dan dienkripsi sebelum diunggah ke server. Kami tidak pernah bisa melihat isi data kamu.
+              <p className="text-[10px] font-medium text-slate-500 mt-0.5 leading-relaxed">
+                Data keuangan disimpan secara lokal dan dienkripsi (End-to-End E2EE AES-GCM 256-bit) sebelum sinkronisasi cloud.
               </p>
             </div>
           </div>
@@ -106,9 +89,9 @@ export default function LoginPage() {
 
         {/* Footer badges */}
         <div className="flex items-center justify-center gap-3">
-          <div className="flex items-center gap-1 text-[10px] font-bold text-slate-500">
-            <Lock className="h-3 w-3 text-violet-400" />
-            <span>End-to-end encrypted</span>
+          <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400">
+            <Lock className="h-3 w-3 text-slate-500" />
+            <span>End-to-End Encrypted · Local-First</span>
           </div>
         </div>
       </div>
