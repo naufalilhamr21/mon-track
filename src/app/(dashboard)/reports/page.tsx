@@ -31,13 +31,13 @@ import {
 
 const AURORA_CHART_COLORS = [
   "#2563EB", // Royal Blue
-  "#38BDF8", // Cyan Sky
-  "#6366F1", // Indigo Violet
-  "#10B981", // Emerald Mint
-  "#F59E0B", // Warm Amber
-  "#EC4899", // Rose Pink
-  "#8B5CF6", // Purple
-  "#14B8A6", // Teal
+  "#51C5F7", // Sky Cyan
+  "#44E1CC", // Turquoise Aqua
+  "#34D399", // Mint Emerald
+  "#38BDF8", // Vivid Cyan
+  "#10B981", // Fresh Green
+  "#2DD4BF", // Teal
+  "#60A5FA", // Soft Blue
 ];
 
 export default function ReportsPage() {
@@ -188,9 +188,11 @@ export default function ReportsPage() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dailyChartData} barCategoryGap="25%">
                 <defs>
-                  <linearGradient id="auroraDailyBar" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#38BDF8" stopOpacity={0.95} />
-                    <stop offset="100%" stopColor="#2563EB" stopOpacity={0.95} />
+                  <linearGradient id="auroraFabGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#2563EB" stopOpacity={0.92} />
+                    <stop offset="40%" stopColor="#51C5F7" stopOpacity={0.88} />
+                    <stop offset="85%" stopColor="#44E1CC" stopOpacity={0.88} />
+                    <stop offset="100%" stopColor="#34D399" stopOpacity={0.92} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(226, 232, 240, 0.6)" />
@@ -202,7 +204,7 @@ export default function ReportsPage() {
                   contentStyle={tooltipStyle}
                   cursor={{ fill: "rgba(37, 99, 235, 0.05)" }}
                 />
-                <Bar dataKey="total" fill="url(#auroraDailyBar)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="total" fill="url(#auroraFabGradient)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -264,15 +266,17 @@ export default function ReportsPage() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyComparison} barCategoryGap="25%">
                 <defs>
-                  <linearGradient id="auroraMonthlyBar" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#818CF8" stopOpacity={0.95} />
-                    <stop offset="100%" stopColor="#4F46E5" stopOpacity={0.95} />
+                  <linearGradient id="auroraMonthlyFabGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#2563EB" stopOpacity={0.92} />
+                    <stop offset="40%" stopColor="#51C5F7" stopOpacity={0.88} />
+                    <stop offset="85%" stopColor="#44E1CC" stopOpacity={0.88} />
+                    <stop offset="100%" stopColor="#34D399" stopOpacity={0.92} />
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="label" tick={{ fontSize: 10, fill: "#94A3B8", fontWeight: 600 }} axisLine={false} tickLine={false} />
                 <YAxis hide />
-                <Tooltip formatter={formatTooltipValue} contentStyle={tooltipStyle} cursor={{ fill: "rgba(79, 70, 229, 0.05)" }} />
-                <Bar dataKey="total" fill="url(#auroraMonthlyBar)" radius={[6, 6, 0, 0]} />
+                <Tooltip formatter={formatTooltipValue} contentStyle={tooltipStyle} cursor={{ fill: "rgba(37, 99, 235, 0.05)" }} />
+                <Bar dataKey="total" fill="url(#auroraMonthlyFabGradient)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

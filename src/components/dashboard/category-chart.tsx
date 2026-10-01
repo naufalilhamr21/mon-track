@@ -9,13 +9,13 @@ interface CategoryChartProps {
 
 const AURORA_CHART_COLORS = [
   "#2563EB", // Royal Blue
-  "#38BDF8", // Cyan Sky
-  "#6366F1", // Indigo Violet
-  "#10B981", // Emerald Mint
-  "#F59E0B", // Warm Amber
-  "#EC4899", // Rose Pink
-  "#8B5CF6", // Purple
-  "#14B8A6", // Teal
+  "#51C5F7", // Sky Cyan
+  "#44E1CC", // Turquoise Aqua
+  "#34D399", // Mint Emerald
+  "#38BDF8", // Vivid Cyan
+  "#10B981", // Fresh Green
+  "#2DD4BF", // Teal
+  "#60A5FA", // Soft Blue
 ];
 
 export function CategoryChart({ data }: CategoryChartProps) {
