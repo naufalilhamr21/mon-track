@@ -7,6 +7,7 @@ import { formatAmountInput, parseAmountInput, cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useSession } from "next-auth/react";
 import { syncEngine } from "@/lib/sync-engine";
+import { useSheetDragDismiss } from "@/hooks/use-sheet-drag-dismiss";
 
 interface BudgetSheetProps {
   open: boolean;
@@ -31,6 +32,7 @@ function BudgetSheetModal({
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }) {
+  const { y, dragHeaderProps } = useSheetDragDismiss(() => onOpenChange(false));
   const settings = useSettingsStore((s) => s.settings);
   const setMonthlyBudget = useSettingsStore((s) => s.setMonthlyBudget);
   const { data: session } = useSession();
@@ -105,38 +107,43 @@ function BudgetSheetModal({
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
         className="relative z-10 w-full max-w-lg mx-auto max-h-[88dvh] overflow-y-auto overscroll-contain rounded-t-3xl border-t border-slate-100 bg-white px-6 pt-3 pb-8 shadow-2xl"
         style={{
+          y,
           paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2.5rem)",
           WebkitOverflowScrolling: "touch",
           touchAction: "pan-y",
         }}
       >
-        {/* Handle Bar (Decorative bar) */}
-        <div className="flex justify-center py-2 w-full">
-          <div className="h-1.5 w-12 rounded-full bg-slate-200" />
-        </div>
-
-        {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-800">
-              <Target className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-extrabold text-[#0F172A]">
-                Atur Anggaran Bulanan
-              </h2>
-              <p className="text-xs font-medium text-slate-400">
-                Batas maksimal pengeluaran setiap bulan
-              </p>
-            </div>
+        {/* Draggable Header Area */}
+        <div {...dragHeaderProps} className="cursor-grab active:cursor-grabbing">
+          {/* Handle Bar (Decorative bar) */}
+          <div className="flex justify-center py-2 w-full">
+            <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
           </div>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors cursor-pointer"
-            aria-label="Tutup"
-          >
-            <X className="h-4 w-4" />
-          </button>
+
+          {/* Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-800">
+                <Target className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-extrabold text-[#0F172A]">
+                  Atur Anggaran Bulanan
+                </h2>
+                <p className="text-xs font-medium text-slate-400">
+                  Batas maksimal pengeluaran setiap bulan
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors cursor-pointer"
+              aria-label="Tutup"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSave} className="space-y-6">

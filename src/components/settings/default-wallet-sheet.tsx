@@ -7,6 +7,7 @@ import { useTransactionStore } from "@/stores/transaction-store";
 import { CategoryIcon } from "@/components/ui/category-icon";
 import { WALLET_TYPE_LABELS, type Wallet } from "@/types/wallet";
 import { formatCurrency, cn } from "@/lib/utils";
+import { useSheetDragDismiss } from "@/hooks/use-sheet-drag-dismiss";
 
 interface DefaultWalletSheetProps {
   open: boolean;
@@ -23,6 +24,7 @@ export function DefaultWalletSheet({
   currentWalletId,
   onSelect,
 }: DefaultWalletSheetProps) {
+  const { y, dragHeaderProps } = useSheetDragDismiss(() => onOpenChange(false));
   const wallets = useWalletStore((s) => s.wallets);
   const transactions = useTransactionStore((s) => s.transactions);
   const getWalletBalance = useWalletStore((s) => s.getWalletBalance);
@@ -67,38 +69,43 @@ export function DefaultWalletSheet({
             transition={{ type: "spring", damping: 30, stiffness: 350 }}
             className="relative z-10 w-full max-w-lg mx-auto max-h-[88dvh] overflow-y-auto overscroll-contain rounded-t-3xl border-t border-slate-100 bg-white px-6 pt-3 pb-8 shadow-2xl"
             style={{
+              y,
               paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2.5rem)",
               WebkitOverflowScrolling: "touch",
               touchAction: "pan-y",
             }}
           >
-            {/* Handle (Decorative bar) */}
-            <div className="flex justify-center py-2 w-full">
-              <div className="h-1.5 w-12 rounded-full bg-slate-200" />
-            </div>
-
-            {/* Header */}
-            <div className="flex items-center justify-between pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                  {isExpense ? (
-                    <ArrowUpRight className="h-5 w-5 text-slate-800" strokeWidth={2.5} />
-                  ) : (
-                    <ArrowDownLeft className="h-5 w-5 text-slate-800" strokeWidth={2.5} />
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">{title}</h3>
-                  <p className="text-xs font-medium text-slate-400 mt-0.5">{description}</p>
-                </div>
+            {/* Draggable Header Area */}
+            <div {...dragHeaderProps} className="cursor-grab active:cursor-grabbing">
+              {/* Handle (Decorative bar) */}
+              <div className="flex justify-center py-2 w-full">
+                <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
               </div>
-              <button
-                onClick={() => onOpenChange(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors cursor-pointer"
-                aria-label="Tutup"
-              >
-                <X className="h-4 w-4" />
-              </button>
+
+              {/* Header */}
+              <div className="flex items-center justify-between pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                    {isExpense ? (
+                      <ArrowUpRight className="h-5 w-5 text-slate-800" strokeWidth={2.5} />
+                    ) : (
+                      <ArrowDownLeft className="h-5 w-5 text-slate-800" strokeWidth={2.5} />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">{title}</h3>
+                    <p className="text-xs font-medium text-slate-400 mt-0.5">{description}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onOpenChange(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors cursor-pointer"
+                  aria-label="Tutup"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
             {/* Wallets List */}

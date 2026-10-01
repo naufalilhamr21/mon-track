@@ -32,6 +32,7 @@ import { syncEngine } from "@/lib/sync-engine";
 import { PwaInstallModal } from "@/components/ui/pwa-install-modal";
 import { DefaultWalletSheet } from "@/components/settings/default-wallet-sheet";
 import { WALLET_TYPE_LABELS } from "@/types/wallet";
+import { useSheetDragDismiss } from "@/hooks/use-sheet-drag-dismiss";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -353,55 +354,10 @@ export default function SettingsPage() {
       {/* Clear Data Bottom Sheet */}
       <AnimatePresence>
         {showClearConfirm && (
-          <div className="fixed inset-0 z-50 flex items-end">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
-              className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs"
-              onClick={() => setShowClearConfirm(false)}
-            />
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 350 }}
-              className="relative z-10 w-full max-w-lg mx-auto bg-white shadow-2xl rounded-t-3xl pb-8"
-              style={{
-                paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)",
-                WebkitOverflowScrolling: "touch",
-                touchAction: "pan-y",
-              }}
-            >
-              <div className="flex justify-center py-2.5 w-full">
-                <div className="h-1.5 w-12 rounded-full bg-slate-200" />
-              </div>
-              <div className="px-6 pb-6">
-                <div className="text-center mb-5">
-                  <Trash2 className="mx-auto h-9 w-9 mb-2 text-slate-700" />
-                  <h3 className="text-base font-bold text-slate-900">Hapus semua data?</h3>
-                  <p className="mt-1 text-xs font-medium text-slate-500">
-                    Semua transaksi lokal akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.
-                  </p>
-                </div>
-                <div className="flex gap-2.5">
-                  <button
-                    onClick={() => setShowClearConfirm(false)}
-                    className="flex-1 rounded-full border border-slate-200 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
-                  >
-                    Batal
-                  </button>
-                  <button
-                    onClick={handleClearData}
-                    className="flex-1 rounded-full py-3 text-xs font-bold text-white bg-slate-900 hover:bg-black cursor-pointer"
-                  >
-                    Hapus Semua
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          <ClearDataConfirmModal
+            onClose={() => setShowClearConfirm(false)}
+            onConfirm={handleClearData}
+          />
         )}
       </AnimatePresence>
 
@@ -481,5 +437,72 @@ function SettingsRow({
       </div>
       <ChevronRight className="h-4 w-4 text-slate-300" />
     </button>
+  );
+}
+
+function ClearDataConfirmModal({
+  onClose,
+  onConfirm,
+}: {
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  const { y, dragHeaderProps } = useSheetDragDismiss(onClose);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 350 }}
+        className="relative z-10 w-full max-w-lg mx-auto bg-white shadow-2xl rounded-t-3xl pb-8"
+        style={{
+          y,
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)",
+          WebkitOverflowScrolling: "touch",
+          touchAction: "pan-y",
+        }}
+      >
+        <div {...dragHeaderProps} className="cursor-grab active:cursor-grabbing">
+          <div className="flex justify-center py-2.5 w-full">
+            <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
+          </div>
+        </div>
+        <div className="px-6 pb-6">
+          <div className="text-center mb-5">
+            <Trash2 className="mx-auto h-9 w-9 mb-2 text-slate-700" />
+            <h3 className="text-base font-bold text-slate-900">Hapus semua data?</h3>
+            <p className="mt-1 text-xs font-medium text-slate-500">
+              Semua transaksi lokal akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.
+            </p>
+          </div>
+          <div className="flex gap-2.5">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 rounded-full border border-slate-200 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={onConfirm}
+              className="flex-1 rounded-full py-3 text-xs font-bold text-white bg-slate-900 hover:bg-black cursor-pointer"
+            >
+              Hapus Semua
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 }

@@ -18,6 +18,8 @@ import type { Transaction, TransactionType } from "@/types/transaction";
 import type { Wallet } from "@/types/wallet";
 import { CategoryIcon } from "@/components/ui/category-icon";
 
+import { useSheetDragDismiss } from "@/hooks/use-sheet-drag-dismiss";
+
 interface TransactionSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -53,6 +55,7 @@ function TransactionSheetModal({
   onSuccess?: () => void;
   editTransaction?: Transaction | null;
 }) {
+  const { y, dragHeaderProps } = useSheetDragDismiss(() => onOpenChange(false));
   const isEditing = !!editTransaction;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -223,26 +226,31 @@ function TransactionSheetModal({
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
         className="relative z-10 w-full max-w-lg mx-auto max-h-[88dvh] overflow-y-auto overscroll-contain bg-white shadow-2xl rounded-t-[32px] px-1 pb-8"
         style={{
+          y,
           paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2.5rem)",
           WebkitOverflowScrolling: "touch",
           touchAction: "pan-y",
         }}
       >
-        {/* Handle (Decorative bar) */}
-        <div className="flex justify-center py-2.5 w-full">
-          <div className="h-1.5 w-12 rounded-full bg-slate-200" />
-        </div>
+        {/* Draggable Header Area (Drag handle + title row) */}
+        <div {...dragHeaderProps} className="cursor-grab active:cursor-grabbing">
+          {/* Handle (Decorative bar) */}
+          <div className="flex justify-center py-2.5 w-full">
+            <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
+          </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3">
-          <h2 className="text-base font-bold text-slate-900">{sheetTitle}</h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-            aria-label="Tutup"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-2">
+            <h2 className="text-base font-bold text-slate-900">{sheetTitle}</h2>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              aria-label="Tutup"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* ── Type Switcher (3 Tabs: Pengeluaran, Pemasukan, Pindah Uang) ── */}

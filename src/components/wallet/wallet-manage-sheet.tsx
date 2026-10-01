@@ -9,6 +9,7 @@ import { cn, generateId, formatAmountInput, parseAmountInput } from "@/lib/utils
 import type { Wallet, WalletType } from "@/types/wallet";
 import { WALLET_TYPE_LABELS } from "@/types/wallet";
 import { useSession } from "next-auth/react";
+import { useSheetDragDismiss } from "@/hooks/use-sheet-drag-dismiss";
 
 interface WalletManageSheetProps {
   open: boolean;
@@ -59,6 +60,7 @@ function WalletManageModal({
   editWallet?: Wallet | null;
   onSuccess?: () => void;
 }) {
+  const { y, dragHeaderProps } = useSheetDragDismiss(() => onOpenChange(false));
   const { data: session } = useSession();
   const userIdentifier = session?.user?.email || session?.user?.id;
   const isEditing = !!editWallet;
@@ -147,27 +149,32 @@ function WalletManageModal({
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
         className="relative z-10 w-full max-w-lg mx-auto max-h-[88dvh] overflow-y-auto overscroll-contain bg-white shadow-2xl rounded-t-[28px] px-1 pb-8"
         style={{
+          y,
           paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2.5rem)",
           WebkitOverflowScrolling: "touch",
           touchAction: "pan-y",
         }}
       >
-        {/* Handle bar (Decorative bar) */}
-        <div className="flex justify-center py-2.5 w-full">
-          <div className="h-1.5 w-12 rounded-full bg-slate-200" />
-        </div>
+        {/* Draggable Header Area */}
+        <div {...dragHeaderProps} className="cursor-grab active:cursor-grabbing">
+          {/* Handle bar (Decorative bar) */}
+          <div className="flex justify-center py-2.5 w-full">
+            <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
+          </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
-          <h2 className="text-base font-bold text-slate-900">
-            {isEditing ? "Edit Dompet" : "Tambah Dompet"}
-          </h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-2 border-b border-slate-100">
+            <h2 className="text-base font-bold text-slate-900">
+              {isEditing ? "Edit Dompet" : "Tambah Dompet"}
+            </h2>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">

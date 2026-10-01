@@ -4,10 +4,12 @@ import { usePwaStore } from "@/stores/pwa-store";
 import { X, Share, PlusSquare } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSheetDragDismiss } from "@/hooks/use-sheet-drag-dismiss";
 
 export function PwaInstallModal() {
   const showIOSModal = usePwaStore((s) => s.showIOSModal);
   const setShowIOSModal = usePwaStore((s) => s.setShowIOSModal);
+  const { y, dragHeaderProps } = useSheetDragDismiss(() => setShowIOSModal(false));
 
   return (
     <AnimatePresence>
@@ -31,44 +33,49 @@ export function PwaInstallModal() {
             transition={{ type: "spring", damping: 30, stiffness: 350 }}
             className="relative z-10 w-full max-w-lg mx-auto max-h-[88dvh] overflow-y-auto overscroll-contain rounded-t-3xl border-t border-slate-100 bg-white px-6 pt-3 pb-8 shadow-2xl"
             style={{
+              y,
               paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2.5rem)",
               WebkitOverflowScrolling: "touch",
               touchAction: "pan-y",
             }}
           >
-            {/* Handle Bar (Decorative bar) */}
-            <div className="flex justify-center py-2 w-full">
-              <div className="h-1.5 w-12 rounded-full bg-slate-200" />
-            </div>
-
-            {/* Header with App Logo */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
-              <div className="flex items-center gap-3">
-                <div className="relative h-11 w-11 shrink-0 rounded-2xl overflow-hidden shadow-md">
-                  <Image
-                    src="/icons/montrack-logo.jpg"
-                    alt="MonTrack Logo"
-                    width={44}
-                    height={44}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-[#0F172A]">
-                    Akses di Layar Utama
-                  </h3>
-                  <p className="text-xs font-medium text-slate-400">
-                    Pasang aplikasi tanpa perlu buka browser
-                  </p>
-                </div>
+            {/* Draggable Header Area */}
+            <div {...dragHeaderProps} className="cursor-grab active:cursor-grabbing">
+              {/* Handle Bar (Decorative bar) */}
+              <div className="flex justify-center py-2 w-full">
+                <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
               </div>
-              <button
-                onClick={() => setShowIOSModal(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors cursor-pointer"
-                aria-label="Tutup"
-              >
-                <X className="h-4 w-4" />
-              </button>
+
+              {/* Header with App Logo */}
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="relative h-11 w-11 shrink-0 rounded-2xl overflow-hidden shadow-md">
+                    <Image
+                      src="/icons/montrack-logo.jpg"
+                      alt="MonTrack Logo"
+                      width={44}
+                      height={44}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-[#0F172A]">
+                      Akses di Layar Utama
+                    </h3>
+                    <p className="text-xs font-medium text-slate-400">
+                      Pasang aplikasi tanpa perlu buka browser
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowIOSModal(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors cursor-pointer"
+                  aria-label="Tutup"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
             {/* Instructions */}
