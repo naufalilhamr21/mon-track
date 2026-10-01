@@ -12,7 +12,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "MonTrack — Personal Finance Tracker",
+  title: "Moneta — Personal Finance Tracker",
   description:
     "Catat keuangan harianmu dengan gaya — kelola dompet, pemasukan, dan pengeluaran dalam satu aplikasi",
   manifest: "/manifest.webmanifest",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "MonTrack",
+    title: "Moneta",
   },
 };
 

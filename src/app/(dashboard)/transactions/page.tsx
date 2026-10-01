@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import type { Transaction } from "@/types/transaction";
 
 function dispatchEditTransaction(transaction: Transaction) {
+  window.dispatchEvent(new CustomEvent("moneta:edit-transaction", { detail: transaction }));
   window.dispatchEvent(new CustomEvent("montrack:edit-transaction", { detail: transaction }));
   window.dispatchEvent(new CustomEvent("montrac:edit-transaction", { detail: transaction }));
 }

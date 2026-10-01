@@ -88,7 +88,7 @@ export default function SettingsPage() {
   const handleExportJSON = () => {
     const data = {
       schemaVersion: 2,
-      application: "MonTrack" as const,
+      application: "Moneta" as const,
       exportedAt: new Date().toISOString(),
       wallets,
       categories,
@@ -101,7 +101,7 @@ export default function SettingsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `montrack-backup-${new Date().toISOString().split("T")[0]}.json`;
+    a.download = `moneta-backup-${new Date().toISOString().split("T")[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -116,6 +116,7 @@ export default function SettingsPage() {
       try {
         const data = JSON.parse(await file.text());
         if (
+          data.application !== "Moneta" &&
           data.application !== "MonTrack" &&
           data.application !== "JagaJajan" &&
           data.application !== "MonTrac" &&
@@ -179,7 +180,7 @@ export default function SettingsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `montrack-${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `moneta-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -348,7 +349,7 @@ export default function SettingsPage() {
       </div>
 
       <p className="text-center text-xs font-semibold text-slate-400 mb-5">
-        MonTrack v1.0
+        Moneta v1.0
       </p>
 
       {/* Clear Data Bottom Sheet */}

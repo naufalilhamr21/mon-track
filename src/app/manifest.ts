@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "MonTrack",
-    short_name: "MonTrack",
+    name: "Moneta",
+    short_name: "Moneta",
     description: "Modern Personal Finance & Multi-Wallet Expense/Income Tracker",
     start_url: "/",
     display: "standalone",

@@ -27,7 +27,7 @@ export default function LoginPage() {
           <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center">
             <Image
               src="/icons/montrack-logo.jpg"
-              alt="MonTrack Logo"
+              alt="Moneta Logo"
               width={80}
               height={80}
               className="relative rounded-2xl object-cover shadow-md"
@@ -36,11 +36,11 @@ export default function LoginPage() {
           </div>
 
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-1">
-            MONTRACK
+            MONETA
           </h1>
           <p className="text-xs font-semibold text-slate-500">
             Personal Finance &amp; Money Tracker App
-           </p>
+          </p>
         </div>
 
         {/* Clean Login Card */}

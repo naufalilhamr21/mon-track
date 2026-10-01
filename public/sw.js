@@ -1,4 +1,4 @@
-const CACHE_NAME = 'montrack-v6';
+const CACHE_NAME = 'moneta-v1';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/favicon.ico',

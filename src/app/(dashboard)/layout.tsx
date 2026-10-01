@@ -85,9 +85,11 @@ export default function DashboardLayout({
       setEditTransaction(e.detail);
       setTransactionOpen(true);
     };
+    window.addEventListener("moneta:edit-transaction", handleEditEvent as EventListener);
     window.addEventListener("montrack:edit-transaction", handleEditEvent as EventListener);
     window.addEventListener("montrac:edit-transaction", handleEditEvent as EventListener);
     return () => {
+      window.removeEventListener("moneta:edit-transaction", handleEditEvent as EventListener);
       window.removeEventListener("montrack:edit-transaction", handleEditEvent as EventListener);
       window.removeEventListener("montrac:edit-transaction", handleEditEvent as EventListener);
     };
@@ -107,7 +109,7 @@ export default function DashboardLayout({
             <div className="absolute inset-0 rounded-[1.5rem] bg-blue-300 opacity-30 blur-lg" />
             <Image
               src="/icons/montrack-logo.jpg"
-              alt="MonTrack"
+              alt="Moneta"
               width={80}
               height={80}
               className="relative rounded-[1.5rem] object-cover animate-float"
@@ -116,7 +118,7 @@ export default function DashboardLayout({
             />
           </div>
           <p className="text-base font-black text-slate-800 tracking-tight mb-4">
-            MonTrack
+            Moneta
           </p>
           <div
             className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
