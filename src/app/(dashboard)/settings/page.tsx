@@ -363,17 +363,25 @@ export default function SettingsPage() {
               onClick={() => setShowClearConfirm(false)}
             />
             <motion.div
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.6 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.y > 90 || info.velocity.y > 250) {
+                  setShowClearConfirm(false);
+                }
+              }}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 350 }}
-              className="relative z-10 w-full bg-white shadow-2xl rounded-t-3xl pb-8"
+              className="relative z-10 w-full bg-white shadow-2xl rounded-t-3xl pb-8 touch-pan-y"
               style={{
                 paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)",
               }}
             >
-              <div className="flex justify-center pt-3 pb-2">
-                <div className="h-1 w-10 rounded-full bg-slate-200" />
+              <div className="flex justify-center py-2.5 cursor-grab active:cursor-grabbing">
+                <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
               </div>
               <div className="px-6 pb-6">
                 <div className="text-center mb-5">

@@ -61,16 +61,24 @@ export function DefaultWalletSheet({
 
           {/* Bottom Sheet */}
           <motion.div
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.6 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 90 || info.velocity.y > 250) {
+                onOpenChange(false);
+              }
+            }}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 350 }}
-            className="relative z-10 w-full max-h-[90dvh] overflow-y-auto rounded-t-3xl border-t border-slate-100 bg-white p-6 shadow-2xl pb-8"
+            className="relative z-10 w-full max-h-[90dvh] overflow-y-auto rounded-t-3xl border-t border-slate-100 bg-white px-6 pt-3 pb-8 shadow-2xl touch-pan-y"
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)" }}
           >
-            {/* Handle */}
-            <div className="flex justify-center -mt-2 pb-3">
-              <div className="h-1.5 w-12 rounded-full bg-slate-200" />
+            {/* Handle (Drag area) */}
+            <div className="flex justify-center py-2 cursor-grab active:cursor-grabbing">
+              <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
             </div>
 
             {/* Header */}
