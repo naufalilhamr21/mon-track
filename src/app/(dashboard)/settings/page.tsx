@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useTransactionStore } from "@/stores/transaction-store";
 import { useCategoryStore } from "@/stores/category-store";
@@ -34,6 +34,7 @@ import { DefaultWalletSheet } from "@/components/settings/default-wallet-sheet";
 import { WALLET_TYPE_LABELS } from "@/types/wallet";
 
 export default function SettingsPage() {
+  const dragControls = useDragControls();
   const { data: session } = useSession();
 
   const settings = useSettingsStore((s) => s.settings);
@@ -364,6 +365,8 @@ export default function SettingsPage() {
             />
             <motion.div
               drag="y"
+              dragControls={dragControls}
+              dragListener={false}
               dragConstraints={{ top: 0, bottom: 0 }}
               dragElastic={{ top: 0, bottom: 0.6 }}
               onDragEnd={(_, info) => {
@@ -375,12 +378,15 @@ export default function SettingsPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 350 }}
-              className="relative z-10 w-full bg-white shadow-2xl rounded-t-3xl pb-8 touch-pan-y"
+              className="relative z-10 w-full bg-white shadow-2xl rounded-t-3xl pb-8"
               style={{
                 paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)",
               }}
             >
-              <div className="flex justify-center py-2.5 cursor-grab active:cursor-grabbing">
+              <div
+                onPointerDown={(e) => dragControls.start(e)}
+                className="flex justify-center py-2.5 cursor-grab active:cursor-grabbing touch-none select-none w-full"
+              >
                 <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
               </div>
               <div className="px-6 pb-6">

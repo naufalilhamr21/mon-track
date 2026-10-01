@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { X, Target } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { formatAmountInput, parseAmountInput, cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useSession } from "next-auth/react";
@@ -31,6 +31,7 @@ function BudgetSheetModal({
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }) {
+  const dragControls = useDragControls();
   const settings = useSettingsStore((s) => s.settings);
   const setMonthlyBudget = useSettingsStore((s) => s.setMonthlyBudget);
   const { data: session } = useSession();
@@ -100,6 +101,8 @@ function BudgetSheetModal({
       {/* Bottom Sheet Modal */}
       <motion.div
         drag="y"
+        dragControls={dragControls}
+        dragListener={false}
         dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={{ top: 0, bottom: 0.6 }}
         onDragEnd={(_, info) => {
@@ -111,11 +114,14 @@ function BudgetSheetModal({
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="relative z-10 w-full max-h-[90dvh] overflow-y-auto rounded-t-3xl border-t border-slate-100 bg-white px-6 pt-3 pb-8 shadow-2xl touch-pan-y"
+        className="relative z-10 w-full max-h-[90dvh] overflow-y-auto overscroll-contain rounded-t-3xl border-t border-slate-100 bg-white px-6 pt-3 pb-8 shadow-2xl"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)" }}
       >
         {/* Handle Bar (Drag area) */}
-        <div className="flex justify-center py-2 cursor-grab active:cursor-grabbing">
+        <div
+          onPointerDown={(e) => dragControls.start(e)}
+          className="flex justify-center py-2 cursor-grab active:cursor-grabbing touch-none select-none w-full"
+        >
           <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
         </div>
 
