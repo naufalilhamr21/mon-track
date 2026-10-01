@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Calendar, Trash2, FileText } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema, type TransactionFormValues } from "@/schemas/transaction-schema";
@@ -30,6 +31,28 @@ export function TransactionSheet({
   onSuccess,
   editTransaction,
 }: TransactionSheetProps) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <TransactionSheetModal
+          onOpenChange={onOpenChange}
+          onSuccess={onSuccess}
+          editTransaction={editTransaction}
+        />
+      )}
+    </AnimatePresence>
+  );
+}
+
+function TransactionSheetModal({
+  onOpenChange,
+  onSuccess,
+  editTransaction,
+}: {
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+  editTransaction?: Transaction | null;
+}) {
   const isEditing = !!editTransaction;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -84,12 +107,10 @@ export function TransactionSheet({
   const toWalletId = form.watch("toWalletId");
 
   useEffect(() => {
-    if (open) {
-      form.reset(getInitialValues());
-      setShowDeleteConfirm(false);
-    }
+    form.reset(getInitialValues());
+    setShowDeleteConfirm(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, editTransaction]);
+  }, [editTransaction]);
 
   const filteredCategories = categories.filter(
     (c) => c.type === txType || c.type === "both"
@@ -183,19 +204,26 @@ export function TransactionSheet({
     : "Pindah Uang";
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-50 flex items-end">
       {/* Overlay */}
-      <div
-        className="animate-fade-in absolute inset-0 backdrop-blur-sm"
-        style={{ backgroundColor: "rgba(15,23,42,0.5)" }}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs"
         onClick={() => onOpenChange(false)}
       />
 
       {/* Sheet */}
-      <div
-        className="animate-slide-up absolute bottom-0 left-0 right-0 max-h-[96dvh] overflow-y-auto bg-white shadow-2xl rounded-t-[32px]"
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 350 }}
+        className="relative z-10 w-full max-h-[94dvh] overflow-y-auto bg-white shadow-2xl rounded-t-[32px] px-1 pb-8"
         style={{
-          paddingBottom: "env(safe-area-inset-bottom, 16px)",
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)",
         }}
       >
         {/* Handle */}
@@ -503,7 +531,7 @@ export function TransactionSheet({
             </div>
           )}
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

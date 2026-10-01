@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, Check, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useWalletStore } from "@/stores/wallet-store";
 import { CategoryIcon } from "@/components/ui/category-icon";
 import { cn, generateId, formatAmountInput, parseAmountInput } from "@/lib/utils";
@@ -35,15 +36,17 @@ export function WalletManageSheet({
   editWallet,
   onSuccess,
 }: WalletManageSheetProps) {
-  if (!open) return null;
-
   return (
-    <WalletManageModal
-      key={editWallet?.id || "new"}
-      onOpenChange={onOpenChange}
-      editWallet={editWallet}
-      onSuccess={onSuccess}
-    />
+    <AnimatePresence>
+      {open && (
+        <WalletManageModal
+          key={editWallet?.id || "new"}
+          onOpenChange={onOpenChange}
+          editWallet={editWallet}
+          onSuccess={onSuccess}
+        />
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -128,16 +131,23 @@ function WalletManageModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50">
-      <div
-        className="animate-fade-in absolute inset-0 bg-slate-900/50 backdrop-blur-xs"
+    <div className="fixed inset-0 z-50 flex items-end">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs"
         onClick={() => onOpenChange(false)}
       />
-      <div
-        className="animate-slide-up absolute bottom-0 left-0 right-0 max-h-[92dvh] overflow-y-auto bg-white shadow-2xl"
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 350 }}
+        className="relative z-10 w-full max-h-[92dvh] overflow-y-auto bg-white shadow-2xl rounded-t-[28px] px-1 pb-8"
         style={{
-          borderRadius: "1.75rem 1.75rem 0 0",
-          paddingBottom: "env(safe-area-inset-bottom, 16px)",
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)",
         }}
       >
         {/* Handle bar */}
@@ -329,7 +339,7 @@ function WalletManageModal({
             </div>
           )}
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }
