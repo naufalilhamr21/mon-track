@@ -7,7 +7,16 @@ interface CategoryChartProps {
   data: { category: Category; total: number; percentage: number }[];
 }
 
-const MONO_SHADES = ["#0F172A", "#334155", "#64748B", "#94A3B8", "#CBD5E1"];
+const AURORA_CHART_COLORS = [
+  "#2563EB", // Royal Blue
+  "#38BDF8", // Cyan Sky
+  "#6366F1", // Indigo Violet
+  "#10B981", // Emerald Mint
+  "#F59E0B", // Warm Amber
+  "#EC4899", // Rose Pink
+  "#8B5CF6", // Purple
+  "#14B8A6", // Teal
+];
 
 export function CategoryChart({ data }: CategoryChartProps) {
   const top5 = data.slice(0, 5);
@@ -33,7 +42,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
                 strokeWidth={0}
               >
                 {top5.map((_, i) => (
-                  <Cell key={i} fill={MONO_SHADES[i % MONO_SHADES.length]} />
+                  <Cell key={i} fill={AURORA_CHART_COLORS[i % AURORA_CHART_COLORS.length]} />
                 ))}
               </Pie>
             </PieChart>
@@ -46,8 +55,8 @@ export function CategoryChart({ data }: CategoryChartProps) {
             <div key={item.category.id} className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
                 <div
-                  className="h-2.5 w-2.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: MONO_SHADES[idx % MONO_SHADES.length] }}
+                  className="h-2.5 w-2.5 shrink-0 rounded-full shadow-xs"
+                  style={{ backgroundColor: AURORA_CHART_COLORS[idx % AURORA_CHART_COLORS.length] }}
                 />
                 <span className="truncate text-xs font-semibold text-slate-700">
                   {item.category.name}

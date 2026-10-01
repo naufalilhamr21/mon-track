@@ -29,7 +29,16 @@ import {
   BarChart3,
 } from "lucide-react";
 
-const MONO_SHADES = ["#0F172A", "#334155", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0"];
+const AURORA_CHART_COLORS = [
+  "#2563EB", // Royal Blue
+  "#38BDF8", // Cyan Sky
+  "#6366F1", // Indigo Violet
+  "#10B981", // Emerald Mint
+  "#F59E0B", // Warm Amber
+  "#EC4899", // Rose Pink
+  "#8B5CF6", // Purple
+  "#14B8A6", // Teal
+];
 
 export default function ReportsPage() {
   const transactions = useTransactionStore((s) => s.transactions);
@@ -178,6 +187,12 @@ export default function ReportsPage() {
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dailyChartData} barCategoryGap="25%">
+                <defs>
+                  <linearGradient id="auroraDailyBar" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#38BDF8" stopOpacity={0.95} />
+                    <stop offset="100%" stopColor="#2563EB" stopOpacity={0.95} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(226, 232, 240, 0.6)" />
                 <XAxis dataKey="day" tick={{ fontSize: 10, fill: "#94A3B8", fontWeight: 600 }} axisLine={false} tickLine={false} />
                 <YAxis hide />
@@ -185,9 +200,9 @@ export default function ReportsPage() {
                   formatter={formatTooltipValue}
                   labelFormatter={(day) => `Tanggal ${day}`}
                   contentStyle={tooltipStyle}
-                  cursor={{ fill: "rgba(15, 23, 42, 0.04)" }}
+                  cursor={{ fill: "rgba(37, 99, 235, 0.05)" }}
                 />
-                <Bar dataKey="total" fill="#0F172A" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="total" fill="url(#auroraDailyBar)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -213,7 +228,7 @@ export default function ReportsPage() {
                     strokeWidth={0}
                   >
                     {categorySpending.slice(0, 6).map((_, i) => (
-                      <Cell key={i} fill={MONO_SHADES[i % MONO_SHADES.length]} />
+                      <Cell key={i} fill={AURORA_CHART_COLORS[i % AURORA_CHART_COLORS.length]} />
                     ))}
                   </Pie>
                 </PieChart>
@@ -223,8 +238,8 @@ export default function ReportsPage() {
               {categorySpending.slice(0, 6).map((item, idx) => (
                 <div key={item.category.id} className="flex items-center gap-2">
                   <div
-                    className="h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: MONO_SHADES[idx % MONO_SHADES.length] }}
+                    className="h-2.5 w-2.5 shrink-0 rounded-full shadow-xs"
+                    style={{ backgroundColor: AURORA_CHART_COLORS[idx % AURORA_CHART_COLORS.length] }}
                   />
                   <span className="flex-1 truncate text-xs font-semibold text-slate-700">
                     {item.category.name}
@@ -248,10 +263,16 @@ export default function ReportsPage() {
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyComparison} barCategoryGap="25%">
+                <defs>
+                  <linearGradient id="auroraMonthlyBar" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#818CF8" stopOpacity={0.95} />
+                    <stop offset="100%" stopColor="#4F46E5" stopOpacity={0.95} />
+                  </linearGradient>
+                </defs>
                 <XAxis dataKey="label" tick={{ fontSize: 10, fill: "#94A3B8", fontWeight: 600 }} axisLine={false} tickLine={false} />
                 <YAxis hide />
-                <Tooltip formatter={formatTooltipValue} contentStyle={tooltipStyle} cursor={{ fill: "rgba(15, 23, 42, 0.04)" }} />
-                <Bar dataKey="total" fill="#475569" radius={[6, 6, 0, 0]} />
+                <Tooltip formatter={formatTooltipValue} contentStyle={tooltipStyle} cursor={{ fill: "rgba(79, 70, 229, 0.05)" }} />
+                <Bar dataKey="total" fill="url(#auroraMonthlyBar)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

@@ -113,13 +113,29 @@ export function MonthlySummaryCard({
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Anggaran {formatCurrency(budget)}
             </span>
-            <span className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold bg-slate-100 text-slate-900">
+            <span
+              className={cn(
+                "flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold",
+                status === "exceeded"
+                  ? "bg-red-50 text-red-600 border border-red-100"
+                  : status === "warning"
+                  ? "bg-amber-50 text-amber-700 border border-amber-100"
+                  : "bg-slate-100 text-slate-900 border border-slate-200/80"
+              )}
+            >
               {percentage}%
             </span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-slate-100">
             <div
-              className="budget-bar h-full rounded-full bg-slate-900"
+              className={cn(
+                "budget-bar h-full rounded-full transition-all duration-500",
+                status === "exceeded"
+                  ? "bg-gradient-to-r from-red-500 to-rose-600"
+                  : status === "warning"
+                  ? "bg-gradient-to-r from-amber-400 to-orange-500"
+                  : "bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-600"
+              )}
               style={{ width: `${clampedPercentage}%` }}
             />
           </div>
