@@ -27,7 +27,7 @@ export function Toast({ message, type = "success", onClose, duration = 2800 }: T
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div
             className={cn(
-              "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-slate-200"
+              "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-slate-200"
             )}
           >
             {type === "success" ? (
