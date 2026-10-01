@@ -68,7 +68,7 @@ export function BottomNavigation({ onAddExpense }: BottomNavigationProps) {
             background: "linear-gradient(135deg, rgba(37, 99, 235, 0.92) 0%, rgba(81, 197, 247, 0.85) 40%, rgba(68, 225, 204, 0.85) 85%, rgba(52, 211, 153, 0.92) 100%)",
             border: "1.5px solid rgba(255, 255, 255, 0.7)",
             boxShadow:
-              "inset 0 1.5px 3px 0 rgba(255, 255, 255, 0.85), inset 0 -2px 4px 0 rgba(0, 0, 0, 0.2), inset 0 0 12px 0 rgba(255, 255, 255, 0.25), 0 12px 28px -4px rgba(37, 99, 235, 0.45), 0 6px 14px -2px rgba(52, 211, 153, 0.3)",
+              "inset 0 1.5px 3px 0 rgba(255, 255, 255, 0.85), inset 0 -2px 4px 0 rgba(0, 0, 0, 0.2), inset 0 0 12px 0 rgba(255, 255, 255, 0.25)",
           }}
           aria-label="Tambah transaksi"
           id="add-expense-fab"
