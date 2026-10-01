@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Calendar, Trash2, FileText } from "lucide-react";
-import { motion, AnimatePresence, useDragControls } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema, type TransactionFormValues } from "@/schemas/transaction-schema";
@@ -53,7 +53,6 @@ function TransactionSheetModal({
   onSuccess?: () => void;
   editTransaction?: Transaction | null;
 }) {
-  const dragControls = useDragControls();
   const isEditing = !!editTransaction;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -218,31 +217,20 @@ function TransactionSheetModal({
 
       {/* Sheet */}
       <motion.div
-        drag="y"
-        dragControls={dragControls}
-        dragListener={false}
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={{ top: 0, bottom: 0.6 }}
-        onDragEnd={(_, info) => {
-          if (info.offset.y > 90 || info.velocity.y > 250) {
-            onOpenChange(false);
-          }
-        }}
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="relative z-10 w-full max-h-[92dvh] overflow-y-auto overscroll-contain bg-white shadow-2xl rounded-t-[32px] px-1 pb-8"
+        className="relative z-10 w-full max-w-lg mx-auto max-h-[88dvh] overflow-y-auto overscroll-contain bg-white shadow-2xl rounded-t-[32px] px-1 pb-8"
         style={{
-          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)",
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2.5rem)",
+          WebkitOverflowScrolling: "touch",
+          touchAction: "pan-y",
         }}
       >
-        {/* Handle (Drag area) */}
-        <div
-          onPointerDown={(e) => dragControls.start(e)}
-          className="flex justify-center py-2.5 cursor-grab active:cursor-grabbing touch-none select-none w-full"
-        >
-          <div className="h-1.5 w-12 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors" />
+        {/* Handle (Decorative bar) */}
+        <div className="flex justify-center py-2.5 w-full">
+          <div className="h-1.5 w-12 rounded-full bg-slate-200" />
         </div>
 
         {/* Header */}
