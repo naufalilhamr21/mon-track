@@ -1,9 +1,11 @@
-const CACHE_NAME = 'moneta-v2';
+const CACHE_NAME = 'moneta-v3';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/favicon.ico',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
+  '/icons/web-icon-192.png',
+  '/icons/web-icon-512.png',
   '/icons/apple-touch-icon.png',
   '/icons/logo-baru.png',
   '/icons/moneta-logo.jpg',
