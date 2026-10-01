@@ -17,8 +17,13 @@ export const metadata: Metadata = {
     "Catat keuangan harianmu dengan gaya — kelola dompet, pemasukan, dan pengeluaran dalam satu aplikasi",
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/icons/logo-baru.png",
-    apple: "/icons/logo-baru.png",
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   appleWebApp: {
     capable: true,

@@ -32,11 +32,12 @@ export function AmountInput({ value, onChange, error, type = "expense" }: Amount
     : "text-5xl";
 
   const isIncome = type === "income";
+  const isTransfer = type === "transfer";
 
   return (
     <div className="w-full rounded-2xl py-5 px-4 text-center border bg-slate-50 border-slate-100 transition-all">
       <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-        {isIncome ? "Nominal Pemasukan" : "Nominal Pengeluaran"}
+        {isIncome ? "Nominal Pemasukan" : isTransfer ? "Nominal Pindah Uang" : "Nominal Pengeluaran"}
       </p>
       <div className="flex w-full items-baseline justify-center gap-1.5">
         <span

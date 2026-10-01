@@ -5,6 +5,8 @@ export interface Settings {
   currency: "IDR";
   monthlyBudget?: number; // Integer IDR
   defaultPaymentMethod: PaymentMethod;
+  defaultExpenseWalletId?: string;
+  defaultIncomeWalletId?: string;
   createdAt: string; // ISO timestamp
   updatedAt: string; // ISO timestamp
 }
@@ -14,6 +16,8 @@ export const DEFAULT_SETTINGS: Settings = {
   currency: "IDR",
   monthlyBudget: undefined,
   defaultPaymentMethod: "cash",
+  defaultExpenseWalletId: undefined,
+  defaultIncomeWalletId: undefined,
   createdAt: "",
   updatedAt: "",
 };

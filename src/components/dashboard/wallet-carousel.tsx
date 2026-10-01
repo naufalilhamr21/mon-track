@@ -67,11 +67,6 @@ export function WalletCarousel() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100">
                   <CategoryIcon icon={wallet.icon} color="#0F172A" className="h-4 w-4" />
                 </div>
-                {wallet.isDefault && (
-                  <span className="text-[9px] font-bold rounded-full px-2 py-0.5 bg-slate-100 text-slate-800 border border-slate-200">
-                    Utama
-                  </span>
-                )}
               </div>
               <div>
                 <p className="text-[11px] font-medium truncate max-w-[6.5rem] text-slate-500">

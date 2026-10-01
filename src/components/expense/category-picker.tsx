@@ -25,7 +25,7 @@ export function CategoryPicker({ categories, selected, onSelect }: CategoryPicke
             className={cn(
               "relative flex flex-col items-center justify-center rounded-2xl py-2.5 px-1 border transition-all active:scale-95 cursor-pointer",
               isSelected
-                ? "border-slate-900 bg-slate-900 text-white shadow-xs"
+                ? "aurora-glass-active shadow-xs"
                 : "border-slate-100 bg-slate-50/60 hover:bg-slate-100/60 text-slate-600"
             )}
           >

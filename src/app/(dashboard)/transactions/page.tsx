@@ -6,7 +6,7 @@ import { useCategoryStore } from "@/stores/category-store";
 import { useWalletStore } from "@/stores/wallet-store";
 import { groupTransactionsByDate } from "@/lib/calculations/transaction-calculations";
 import { formatCurrency, getRelativeDayLabel } from "@/lib/utils";
-import { Search, X, SlidersHorizontal, Receipt } from "lucide-react";
+import { Search, X, SlidersHorizontal, Receipt, ArrowLeftRight } from "lucide-react";
 import { CategoryIcon } from "@/components/ui/category-icon";
 import { cn } from "@/lib/utils";
 import type { Transaction } from "@/types/transaction";
@@ -16,7 +16,7 @@ function dispatchEditTransaction(transaction: Transaction) {
   window.dispatchEvent(new CustomEvent("montrac:edit-transaction", { detail: transaction }));
 }
 
-type TypeFilter = "all" | "expense" | "income";
+type TypeFilter = "all" | "expense" | "income" | "transfer";
 
 export default function TransactionsPage() {
   const transactions = useTransactionStore((s) => s.transactions);
@@ -33,9 +33,10 @@ export default function TransactionsPage() {
     let result = transactions;
 
     if (filterType !== "all") {
-      result = result.filter((t) =>
-        filterType === "expense" ? (t.type === "expense" || !t.type) : t.type === filterType
-      );
+      result = result.filter((t) => {
+        if (filterType === "expense") return t.type === "expense" || !t.type;
+        return t.type === filterType;
+      });
     }
 
     if (search) {
@@ -75,7 +76,7 @@ export default function TransactionsPage() {
           className={cn(
             "flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer",
             hasActiveFilter
-              ? "border-slate-900 bg-slate-900 text-white shadow-xs"
+              ? "aurora-glass-active shadow-xs"
               : "border-slate-200 bg-white text-slate-500 hover:border-slate-400 hover:text-slate-800"
           )}
         >
@@ -109,6 +110,7 @@ export default function TransactionsPage() {
           { key: "all", label: "Semua" },
           { key: "expense", label: "Pengeluaran" },
           { key: "income", label: "Pemasukan" },
+          { key: "transfer", label: "Pindah Uang" },
         ] as { key: TypeFilter; label: string }[]).map(({ key, label }) => {
           const active = filterType === key;
           return (
@@ -118,7 +120,7 @@ export default function TransactionsPage() {
               className={cn(
                 "flex-1 rounded-full border py-2 text-xs font-bold transition-all cursor-pointer active:scale-95",
                 active
-                  ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                  ? "aurora-glass-active shadow-xs"
                   : "bg-white text-slate-500 border-slate-200/80 hover:bg-slate-50"
               )}
             >
@@ -142,7 +144,7 @@ export default function TransactionsPage() {
                 className={cn(
                   "shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
                   !filterCategory
-                    ? "border-slate-900 bg-slate-900 text-white"
+                    ? "aurora-glass-active shadow-xs"
                     : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                 )}
               >
@@ -155,7 +157,7 @@ export default function TransactionsPage() {
                   className={cn(
                     "shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
                     filterCategory === cat.id
-                      ? "border-slate-900 bg-slate-900 text-white shadow-xs"
+                      ? "aurora-glass-active shadow-xs"
                       : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                   )}
                 >
@@ -182,7 +184,7 @@ export default function TransactionsPage() {
                   className={cn(
                     "shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
                     !filterWallet
-                      ? "border-slate-900 bg-slate-900 text-white"
+                      ? "aurora-glass-active shadow-xs"
                       : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                   )}
                 >
@@ -195,7 +197,7 @@ export default function TransactionsPage() {
                     className={cn(
                       "shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
                       filterWallet === w.id
-                        ? "border-slate-900 bg-slate-900 text-white shadow-xs"
+                        ? "aurora-glass-active shadow-xs"
                         : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                     )}
                   >
@@ -272,7 +274,9 @@ export default function TransactionsPage() {
                 {group.transactions.map((t) => {
                   const cat = categories.find((c) => c.id === t.categoryId);
                   const wallet = wallets.find((w) => w.id === t.walletId);
+                  const toWallet = wallets.find((w) => w.id === t.toWalletId);
                   const isIncome = t.type === "income";
+                  const isTransfer = t.type === "transfer";
 
                   return (
                     <button
@@ -284,36 +288,55 @@ export default function TransactionsPage() {
                       {/* Icon + Info */}
                       <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100">
-                          <CategoryIcon
-                            icon={cat?.icon ?? "Package"}
-                            color="#0F172A"
-                            className="h-5 w-5"
-                          />
+                          {isTransfer ? (
+                            <ArrowLeftRight className="h-5 w-5 text-slate-700" strokeWidth={2} />
+                          ) : (
+                            <CategoryIcon
+                              icon={cat?.icon ?? "Package"}
+                              color="#0F172A"
+                              className="h-5 w-5"
+                            />
+                          )}
                         </div>
 
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-sm font-semibold text-slate-900">
-                            {t.note || cat?.name || (isIncome ? "Pemasukan" : "Pengeluaran")}
+                            {isTransfer
+                              ? t.note || "Pindah Uang"
+                              : t.note || cat?.name || (isIncome ? "Pemasukan" : "Pengeluaran")}
                           </div>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            {cat && (
-                              <span className="text-[10px] font-medium text-slate-500">
-                                {cat.name}
+                            {isTransfer ? (
+                              <span className="text-[10px] font-semibold text-slate-500">
+                                {wallet?.name ?? "Dompet"} → {toWallet?.name ?? "Dompet"}
                               </span>
-                            )}
-                            {wallet && (
-                              <span className="flex items-center gap-0.5 text-[10px] font-semibold text-slate-400">
-                                · {wallet.name}
-                              </span>
+                            ) : (
+                              <>
+                                {cat && (
+                                  <span className="text-[10px] font-medium text-slate-500">
+                                    {cat.name}
+                                  </span>
+                                )}
+                                {wallet && (
+                                  <span className="flex items-center gap-0.5 text-[10px] font-semibold text-slate-400">
+                                    · {wallet.name}
+                                  </span>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
                       </div>
 
                       {/* Amount (Monochrome) */}
-                      <span className="text-sm font-bold tabular-nums shrink-0 ml-3 text-slate-900">
-                        {isIncome ? "+" : "-"}{formatCurrency(t.amount)}
-                      </span>
+                      <div className="flex items-center gap-1 shrink-0 ml-3">
+                        <span className="text-sm font-bold tabular-nums tracking-tight text-slate-900">
+                          {isIncome ? "+" : isTransfer ? "" : "-"}{formatCurrency(t.amount)}
+                        </span>
+                        {isTransfer && (
+                          <ArrowLeftRight className="h-3.5 w-3.5 text-slate-400" />
+                        )}
+                      </div>
                     </button>
                   );
                 })}

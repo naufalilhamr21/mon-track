@@ -55,7 +55,7 @@ export function BottomNavigation({ onAddExpense }: BottomNavigationProps) {
         </div>
       </nav>
 
-      {/* Separate Luminous Blue-Cyan-Green Gradient FAB (Bottom-Right) */}
+      {/* Separate Glass Aurora Gradient FAB (Bottom-Right) */}
       <div
         className="fixed right-4 bottom-4 z-40 pointer-events-auto"
         style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
@@ -63,14 +63,17 @@ export function BottomNavigation({ onAddExpense }: BottomNavigationProps) {
         <button
           type="button"
           onClick={onAddExpense}
-          className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-white/40 transition-all duration-200 hover:scale-105 active:scale-95"
+          className="group relative flex h-14 w-14 cursor-pointer items-center justify-center rounded-full overflow-hidden backdrop-blur-xl transition-all duration-200 hover:scale-105 active:scale-95"
           style={{
-            background: "linear-gradient(135deg, #2563EB 0%, #51c5f7ff 40%, #44e1ccff 85%, #34D399 100%)",
+            background: "linear-gradient(135deg, rgba(37, 99, 235, 0.92) 0%, rgba(81, 197, 247, 0.85) 40%, rgba(68, 225, 204, 0.85) 85%, rgba(52, 211, 153, 0.92) 100%)",
+            border: "1.5px solid rgba(255, 255, 255, 0.65)",
+            boxShadow:
+              "inset 0 1.5px 3px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 4px 0 rgba(0, 0, 0, 0.2), inset 0 0 12px 0 rgba(255, 255, 255, 0.25)",
           }}
           aria-label="Tambah transaksi"
           id="add-expense-fab"
         >
-          <Plus className="h-7 w-7 text-white drop-shadow-xs" strokeWidth={2.75} />
+          <Plus className="relative z-10 h-7 w-7 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]" strokeWidth={2.75} />
         </button>
       </div>
     </>

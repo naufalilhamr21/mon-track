@@ -13,6 +13,8 @@ interface SettingsState {
   updateSettings: (data: Partial<Settings>, userIdentifier?: string | null) => Promise<void>;
   setMonthlyBudget: (budget: number | undefined, userIdentifier?: string | null) => Promise<void>;
   setDefaultPaymentMethod: (method: PaymentMethod, userIdentifier?: string | null) => Promise<void>;
+  setDefaultExpenseWallet: (walletId: string, userIdentifier?: string | null) => Promise<void>;
+  setDefaultIncomeWallet: (walletId: string, userIdentifier?: string | null) => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
@@ -49,6 +51,24 @@ export const useSettingsStore = create<SettingsState>((set) => ({
 
   setDefaultPaymentMethod: async (method: PaymentMethod, userIdentifier?: string | null) => {
     await settingsRepository.update({ defaultPaymentMethod: method });
+    const updated = await settingsRepository.get();
+    set({ settings: updated });
+    if (navigator.onLine) {
+      syncEngine.syncSettings(updated, userIdentifier);
+    }
+  },
+
+  setDefaultExpenseWallet: async (walletId: string, userIdentifier?: string | null) => {
+    await settingsRepository.update({ defaultExpenseWalletId: walletId });
+    const updated = await settingsRepository.get();
+    set({ settings: updated });
+    if (navigator.onLine) {
+      syncEngine.syncSettings(updated, userIdentifier);
+    }
+  },
+
+  setDefaultIncomeWallet: async (walletId: string, userIdentifier?: string | null) => {
+    await settingsRepository.update({ defaultIncomeWalletId: walletId });
     const updated = await settingsRepository.get();
     set({ settings: updated });
     if (navigator.onLine) {

@@ -5,8 +5,9 @@ import { formatCurrency } from "@/lib/utils";
 import type { Transaction } from "@/types/transaction";
 import type { Category } from "@/types/category";
 import Link from "next/link";
-import { ChevronRight, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { ChevronRight, ArrowUpRight, ArrowDownLeft, ArrowLeftRight } from "lucide-react";
 import { CategoryIcon } from "@/components/ui/category-icon";
+import { useWalletStore } from "@/stores/wallet-store";
 import { cn } from "@/lib/utils";
 
 interface RecentTransactionsProps {
@@ -20,6 +21,7 @@ export function RecentTransactions({
   categories,
   onEditTransaction,
 }: RecentTransactionsProps) {
+  const wallets = useWalletStore((s) => s.wallets);
   const [selectedCatId, setSelectedCatId] = useState<string>("all");
 
   const filteredTransactions =
@@ -62,7 +64,7 @@ export function RecentTransactions({
                 className={cn(
                   "shrink-0 rounded-full px-4 py-1.5 text-xs font-medium transition-all cursor-pointer active:scale-95",
                   isActive
-                    ? "bg-slate-900 text-white shadow-xs"
+                    ? "aurora-glass-active shadow-xs"
                     : "bg-white text-slate-500 border border-slate-100/90 hover:bg-slate-50"
                 )}
               >
@@ -89,6 +91,9 @@ export function RecentTransactions({
           {filteredTransactions.map((t) => {
             const category = categories.find((c) => c.id === t.categoryId);
             const isIncome = t.type === "income";
+            const isTransfer = t.type === "transfer";
+            const fromWallet = wallets.find((w) => w.id === t.walletId);
+            const toWallet = wallets.find((w) => w.id === t.toWalletId);
 
             return (
               <button
@@ -100,18 +105,26 @@ export function RecentTransactions({
                 {/* Icon + Title */}
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100">
-                    <CategoryIcon
-                      icon={category?.icon ?? "Package"}
-                      color="#0F172A"
-                      className="h-5 w-5"
-                    />
+                    {isTransfer ? (
+                      <ArrowLeftRight className="h-5 w-5 text-slate-700" strokeWidth={2} />
+                    ) : (
+                      <CategoryIcon
+                        icon={category?.icon ?? "Package"}
+                        color="#0F172A"
+                        className="h-5 w-5"
+                      />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-slate-900">
-                      {t.note || category?.name || (isIncome ? "Pemasukan" : "Pengeluaran")}
+                      {isTransfer
+                        ? t.note || "Pindah Uang"
+                        : t.note || category?.name || (isIncome ? "Pemasukan" : "Pengeluaran")}
                     </p>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      {category?.name || "Kategori"} · {t.date}
+                      {isTransfer
+                        ? `${fromWallet?.name ?? "Dompet"} → ${toWallet?.name ?? "Dompet"} · ${t.date}`
+                        : `${category?.name || "Kategori"} · ${t.date}`}
                     </p>
                   </div>
                 </div>
@@ -119,10 +132,12 @@ export function RecentTransactions({
                 {/* Amount (Clean Monochrome) */}
                 <div className="flex items-center gap-1 shrink-0 ml-3">
                   <span className="text-sm font-bold tabular-nums tracking-tight text-slate-900">
-                    {isIncome ? "+" : "-"}{formatCurrency(t.amount)}
+                    {isIncome ? "+" : isTransfer ? "" : "-"}{formatCurrency(t.amount)}
                   </span>
                   {isIncome ? (
                     <ArrowDownLeft className="h-3.5 w-3.5 text-slate-500" />
+                  ) : isTransfer ? (
+                    <ArrowLeftRight className="h-3.5 w-3.5 text-slate-400" />
                   ) : (
                     <ArrowUpRight className="h-3.5 w-3.5 text-slate-400" />
                   )}

@@ -106,11 +106,11 @@ export default function DashboardLayout({
           <div className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center">
             <div className="absolute inset-0 rounded-[1.5rem] bg-blue-300 opacity-30 blur-lg" />
             <Image
-              src="/icons/logo-baru.png"
+              src="/icons/montrack-logo.jpg"
               alt="MonTrack"
               width={80}
               height={80}
-              className="relative rounded-[1.5rem] object-contain animate-float"
+              className="relative rounded-[1.5rem] object-cover animate-float"
               style={{ boxShadow: "0 8px 24px rgba(37,99,235,0.2)" }}
               priority
             />

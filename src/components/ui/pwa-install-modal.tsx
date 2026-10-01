@@ -33,11 +33,11 @@ export function PwaInstallModal() {
           <div className="flex items-center gap-3">
             <div className="relative h-11 w-11 shrink-0 rounded-2xl overflow-hidden shadow-md">
               <Image
-                src="/icons/logo-baru.png"
+                src="/icons/montrack-logo.jpg"
                 alt="MonTrack Logo"
                 width={44}
                 height={44}
-                className="h-full w-full object-contain"
+                className="h-full w-full object-cover"
               />
             </div>
             <div>

@@ -26,27 +26,27 @@ export default function LoginPage() {
           {/* Logo container */}
           <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center">
             <Image
-              src="/icons/logo-baru.png"
+              src="/icons/montrack-logo.jpg"
               alt="MonTrack Logo"
               width={80}
               height={80}
-              className="relative rounded-2xl object-contain shadow-md"
+              className="relative rounded-2xl object-cover shadow-md"
               priority
             />
           </div>
 
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-1">
-            MonTrack
+            MONTRACK
           </h1>
           <p className="text-xs font-semibold text-slate-500">
-            Personal Finance &amp; Multi-Wallet Tracker
-          </p>
+            Personal Finance &amp; Money Tracker App
+           </p>
         </div>
 
         {/* Clean Login Card */}
-        <div className="rounded-3xl p-6 mb-4 bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-lg shadow-slate-900/5">
-          <p className="text-center text-sm font-bold text-slate-800 mb-4">
-            Masuk untuk mulai mencatat
+        <div className="rounded-4xl p-6 mb-6 shadow-lg shadow-slate-900/5 aurora-glass-active opacity-90">
+          <p className="text-center text-sm font-bold text-white mb-4">
+            Masuk untuk menggunakan aplikasi
           </p>
 
           <button
@@ -72,19 +72,6 @@ export default function LoginPage() {
               </>
             )}
           </button>
-
-          {/* Encryption assurance */}
-          <div className="mt-4 flex items-start gap-2.5 rounded-2xl p-3.5 bg-slate-50 border border-slate-200/70">
-            <Shield className="h-4 w-4 text-slate-700 shrink-0 mt-0.5" strokeWidth={2} />
-            <div>
-              <p className="text-xs font-bold text-slate-900">
-                Data terenkripsi &amp; privat
-              </p>
-              <p className="text-[10px] font-medium text-slate-500 mt-0.5 leading-relaxed">
-                Data keuangan disimpan secara lokal dan dienkripsi (End-to-End E2EE AES-GCM 256-bit) sebelum sinkronisasi cloud.
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Footer badges */}

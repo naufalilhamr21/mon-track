@@ -1,10 +1,12 @@
-const CACHE_NAME = 'jagajajan-v2';
+const CACHE_NAME = 'montrack-v6';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
-  '/icons/logo-baru.png',
+  '/favicon.ico',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
-  '/icons/apple-touch-icon.png'
+  '/icons/apple-touch-icon.png',
+  '/icons/logo-baru.png',
+  '/icons/montrack-logo.jpg',
 ];
 
 self.addEventListener('install', (event) => {

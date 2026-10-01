@@ -8,6 +8,7 @@ import { transactionSchema, type TransactionFormValues } from "@/schemas/transac
 import { useTransactionStore } from "@/stores/transaction-store";
 import { useCategoryStore } from "@/stores/category-store";
 import { useWalletStore } from "@/stores/wallet-store";
+import { useSettingsStore } from "@/stores/settings-store";
 import { AmountInput } from "./amount-input";
 import { CategoryPicker } from "./category-picker";
 import { cn, getToday, generateId } from "@/lib/utils";
@@ -38,18 +39,39 @@ export function TransactionSheet({
   const deleteTransaction = useTransactionStore((s) => s.deleteTransaction);
   const categories = useCategoryStore((s) => s.categories);
   const wallets = useWalletStore((s) => s.wallets);
+  const settings = useSettingsStore((s) => s.settings);
   const { data: session } = useSession();
-  const defaultWallet = wallets.find((w) => w.isDefault) ?? wallets[0];
 
-  const getInitialValues = (): TransactionFormValues => ({
-    type: editTransaction?.type ?? "expense",
-    amount: editTransaction?.amount ?? 0,
-    categoryId: editTransaction?.categoryId ?? "",
-    walletId: editTransaction?.walletId ?? defaultWallet?.id ?? "",
-    note: editTransaction?.note ?? "",
-    date: editTransaction?.date ?? getToday(),
-    paymentMethod: editTransaction?.paymentMethod ?? undefined,
-  });
+  const getDefaultWalletForType = (type: TransactionType) => {
+    if (type === "income" && settings.defaultIncomeWalletId) {
+      const found = wallets.find((w) => w.id === settings.defaultIncomeWalletId);
+      if (found) return found;
+    }
+    if (type === "expense" && settings.defaultExpenseWalletId) {
+      const found = wallets.find((w) => w.id === settings.defaultExpenseWalletId);
+      if (found) return found;
+    }
+    return wallets.find((w) => w.isDefault) ?? wallets[0];
+  };
+
+  const getInitialValues = (): TransactionFormValues => {
+    const initialType = editTransaction?.type ?? "expense";
+    const initialWallet = getDefaultWalletForType(initialType);
+    const initialToWallet =
+      editTransaction?.toWalletId ??
+      (wallets.find((w) => w.id !== (editTransaction?.walletId ?? initialWallet?.id))?.id || "");
+
+    return {
+      type: initialType,
+      amount: editTransaction?.amount ?? 0,
+      categoryId: editTransaction?.categoryId ?? "",
+      walletId: editTransaction?.walletId ?? initialWallet?.id ?? "",
+      toWalletId: initialToWallet,
+      note: editTransaction?.note ?? "",
+      date: editTransaction?.date ?? getToday(),
+      paymentMethod: editTransaction?.paymentMethod ?? undefined,
+    };
+  };
 
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionSchema),
@@ -59,6 +81,7 @@ export function TransactionSheet({
   const txType = form.watch("type") as TransactionType;
   const amount = form.watch("amount");
   const walletId = form.watch("walletId");
+  const toWalletId = form.watch("toWalletId");
 
   useEffect(() => {
     if (open) {
@@ -73,9 +96,11 @@ export function TransactionSheet({
   );
 
   useEffect(() => {
-    const currentCategoryId = form.getValues("categoryId");
-    const isCompatible = filteredCategories.some((c) => c.id === currentCategoryId);
-    if (!isCompatible && currentCategoryId) form.setValue("categoryId", "");
+    if (txType !== "transfer") {
+      const currentCategoryId = form.getValues("categoryId");
+      const isCompatible = filteredCategories.some((c) => c.id === currentCategoryId);
+      if (!isCompatible && currentCategoryId) form.setValue("categoryId", "");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txType]);
 
@@ -88,20 +113,32 @@ export function TransactionSheet({
         await updateTransaction(
           editTransaction.id,
           {
-            amount: data.amount, type: data.type, categoryId: data.categoryId,
-            walletId: data.walletId, toWalletId: data.toWalletId,
-            note: data.note || undefined, date: data.date,
-            paymentMethod: data.paymentMethod, updatedAt: now,
+            amount: data.amount,
+            type: data.type,
+            categoryId: data.type === "transfer" ? "" : data.categoryId,
+            walletId: data.walletId,
+            toWalletId: data.type === "transfer" ? data.toWalletId : undefined,
+            note: data.note || undefined,
+            date: data.date,
+            paymentMethod: data.paymentMethod,
+            updatedAt: now,
           },
           userIdentifier
         );
       } else {
         await addTransaction(
           {
-            id: generateId(), amount: data.amount, type: data.type,
-            categoryId: data.categoryId, walletId: data.walletId, toWalletId: data.toWalletId,
-            note: data.note || undefined, date: data.date,
-            paymentMethod: data.paymentMethod, createdAt: now, updatedAt: now,
+            id: generateId(),
+            amount: data.amount,
+            type: data.type,
+            categoryId: data.type === "transfer" ? "" : data.categoryId,
+            walletId: data.walletId,
+            toWalletId: data.type === "transfer" ? data.toWalletId : undefined,
+            note: data.note || undefined,
+            date: data.date,
+            paymentMethod: data.paymentMethod,
+            createdAt: now,
+            updatedAt: now,
           },
           userIdentifier
         );
@@ -132,6 +169,18 @@ export function TransactionSheet({
   if (!open) return null;
 
   const isExpense = txType === "expense";
+  const isIncome = txType === "income";
+  const isTransfer = txType === "transfer";
+
+  const sheetTitle = isEditing
+    ? isTransfer
+      ? "Ubah Pindah Uang"
+      : "Ubah Transaksi"
+    : isExpense
+    ? "Tambah Pengeluaran"
+    : isIncome
+    ? "Tambah Pemasukan"
+    : "Pindah Uang";
 
   return (
     <div className="fixed inset-0 z-50">
@@ -156,9 +205,7 @@ export function TransactionSheet({
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3">
-          <h2 className="text-base font-bold text-slate-900">
-            {isEditing ? "Ubah Transaksi" : isExpense ? "Tambah Pengeluaran" : "Tambah Pemasukan"}
-          </h2>
+          <h2 className="text-base font-bold text-slate-900">{sheetTitle}</h2>
           <button
             onClick={() => onOpenChange(false)}
             className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
@@ -168,25 +215,44 @@ export function TransactionSheet({
           </button>
         </div>
 
-        {/* ── Type Switcher ── */}
+        {/* ── Type Switcher (3 Tabs: Pengeluaran, Pemasukan, Pindah Uang) ── */}
         <div className="px-5 pb-3">
           <div className="flex rounded-full overflow-hidden bg-slate-100 p-1 gap-1">
-            {(["expense", "income"] as TransactionType[]).map((t) => {
-              const active = txType === t;
-              const isExp = t === "expense";
+            {([
+              { key: "expense", label: "Pengeluaran" },
+              { key: "income", label: "Pemasukan" },
+              { key: "transfer", label: "Pindah Uang" },
+            ] as { key: TransactionType; label: string }[]).map(({ key, label }) => {
+              const active = txType === key;
               return (
                 <button
-                  key={t}
+                  key={key}
                   type="button"
-                  onClick={() => form.setValue("type", t)}
+                  onClick={() => {
+                    form.setValue("type", key);
+                    if (!isEditing) {
+                      if (key === "transfer") {
+                        const currentSource = form.getValues("walletId") || wallets[0]?.id || "";
+                        const nextDest = wallets.find((w) => w.id !== currentSource)?.id || "";
+                        form.setValue("walletId", currentSource);
+                        form.setValue("toWalletId", nextDest, { shouldValidate: true });
+                        form.setValue("categoryId", "");
+                      } else {
+                        const targetWallet = getDefaultWalletForType(key);
+                        if (targetWallet) {
+                          form.setValue("walletId", targetWallet.id);
+                        }
+                      }
+                    }
+                  }}
                   className={cn(
                     "flex-1 rounded-full py-2 text-xs font-bold transition-all cursor-pointer active:scale-95",
                     active
-                      ? "bg-slate-900 text-white shadow-xs"
+                      ? "aurora-glass-active shadow-xs"
                       : "text-slate-500 hover:text-slate-800"
                   )}
                 >
-                  {isExp ? "Pengeluaran" : "Pemasukan"}
+                  {label}
                 </button>
               );
             })}
@@ -202,60 +268,151 @@ export function TransactionSheet({
             type={txType}
           />
 
-          {/* Wallet Selector */}
-          {wallets.length > 0 && (
-            <div>
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Dari Dompet
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {wallets.map((w: Wallet) => {
-                  const active = walletId === w.id;
-                  return (
-                    <button
-                      key={w.id}
-                      type="button"
-                      onClick={() =>
-                        form.setValue("walletId", w.id, { shouldValidate: true })
-                      }
-                      className={cn(
-                        "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer active:scale-95",
-                        active
-                          ? "border-slate-900 bg-slate-900 text-white shadow-xs"
-                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                      )}
-                    >
-                      <CategoryIcon
-                        icon={w.icon}
-                        color={active ? "#FFFFFF" : "#0F172A"}
-                        className="h-3.5 w-3.5"
-                      />
-                      {w.name}
-                    </button>
-                  );
-                })}
+          {/* Wallet Selectors */}
+          {isTransfer ? (
+            <div className="space-y-3.5">
+              {/* Source Wallet */}
+              <div>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  Dari Dompet (Asal)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {wallets.map((w: Wallet) => {
+                    const active = walletId === w.id;
+                    return (
+                      <button
+                        key={w.id}
+                        type="button"
+                        onClick={() => {
+                          form.setValue("walletId", w.id, { shouldValidate: true });
+                          if (toWalletId === w.id) {
+                            const other = wallets.find((otherW) => otherW.id !== w.id);
+                            if (other) form.setValue("toWalletId", other.id, { shouldValidate: true });
+                          }
+                        }}
+                        className={cn(
+                          "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer active:scale-95",
+                          active
+                            ? "aurora-glass-active shadow-xs"
+                            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                        )}
+                      >
+                        <CategoryIcon
+                          icon={w.icon}
+                          color={active ? "#FFFFFF" : "#0F172A"}
+                          className="h-3.5 w-3.5"
+                        />
+                        {w.name}
+                      </button>
+                    );
+                  })}
+                </div>
+                {form.formState.errors.walletId && (
+                  <p className="mt-1.5 text-xs font-bold text-red-500">
+                    {form.formState.errors.walletId.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Destination Wallet */}
+              <div>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  Ke Dompet (Tujuan)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {wallets.map((w: Wallet) => {
+                    const active = toWalletId === w.id;
+                    const isSame = walletId === w.id;
+                    return (
+                      <button
+                        key={w.id}
+                        type="button"
+                        disabled={isSame}
+                        onClick={() =>
+                          form.setValue("toWalletId", w.id, { shouldValidate: true })
+                        }
+                        className={cn(
+                          "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed",
+                          active
+                            ? "aurora-glass-active shadow-xs"
+                            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                        )}
+                      >
+                        <CategoryIcon
+                          icon={w.icon}
+                          color={active ? "#FFFFFF" : "#0F172A"}
+                          className="h-3.5 w-3.5"
+                        />
+                        {w.name}
+                        {isSame && <span className="text-[9px] font-normal text-slate-400">(Asal)</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+                {form.formState.errors.toWalletId && (
+                  <p className="mt-1.5 text-xs font-bold text-red-500">
+                    {form.formState.errors.toWalletId.message}
+                  </p>
+                )}
               </div>
             </div>
+          ) : (
+            wallets.length > 0 && (
+              <div>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  {isExpense ? "Dari Dompet" : "Ke Dompet"}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {wallets.map((w: Wallet) => {
+                    const active = walletId === w.id;
+                    return (
+                      <button
+                        key={w.id}
+                        type="button"
+                        onClick={() =>
+                          form.setValue("walletId", w.id, { shouldValidate: true })
+                        }
+                        className={cn(
+                          "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer active:scale-95",
+                          active
+                            ? "aurora-glass-active shadow-xs"
+                            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                        )}
+                      >
+                        <CategoryIcon
+                          icon={w.icon}
+                          color={active ? "#FFFFFF" : "#0F172A"}
+                          className="h-3.5 w-3.5"
+                        />
+                        {w.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )
           )}
 
-          {/* Category */}
-          <div>
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              Kategori
-            </p>
-            <CategoryPicker
-              categories={filteredCategories}
-              selected={form.watch("categoryId")}
-              onSelect={(id) =>
-                form.setValue("categoryId", id, { shouldValidate: true })
-              }
-            />
-            {form.formState.errors.categoryId && (
-              <p className="mt-1.5 text-xs font-bold text-slate-900">
-                {form.formState.errors.categoryId.message}
+          {/* Category (Expense and Income only) */}
+          {!isTransfer && (
+            <div>
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                Kategori
               </p>
-            )}
-          </div>
+              <CategoryPicker
+                categories={filteredCategories}
+                selected={form.watch("categoryId")}
+                onSelect={(id) =>
+                  form.setValue("categoryId", id, { shouldValidate: true })
+                }
+              />
+              {form.formState.errors.categoryId && (
+                <p className="mt-1.5 text-xs font-bold text-slate-900">
+                  {form.formState.errors.categoryId.message}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Catatan */}
           <div>
@@ -267,7 +424,11 @@ export function TransactionSheet({
             <input
               {...form.register("note")}
               type="text"
-              placeholder="Makan siang, bensin, belanja..."
+              placeholder={
+                isTransfer
+                  ? "Tarik tunai ATM, isi saldo GoPay, tabungan..."
+                  : "Makan siang, bensin, belanja..."
+              }
               className="w-full rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:bg-white focus:outline-none transition-all"
             />
           </div>
@@ -293,13 +454,15 @@ export function TransactionSheet({
               "w-full h-[52px] rounded-full py-3.5 text-sm font-bold transition-all cursor-pointer disabled:cursor-not-allowed",
               isSubmitting || amount === 0
                 ? "bg-slate-100 text-slate-400"
-                : "bg-slate-900 text-white hover:bg-black active:scale-[0.98] shadow-md shadow-slate-900/10"
+                : "aurora-glass-active hover:opacity-95 active:scale-[0.98] shadow-md shadow-sky-500/20"
             )}
           >
             {isSubmitting
               ? "Menyimpan..."
               : isEditing
               ? "Simpan Perubahan"
+              : isTransfer
+              ? "Pindah Uang"
               : "Simpan Transaksi"}
           </button>
 

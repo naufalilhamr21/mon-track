@@ -27,11 +27,6 @@ const WALLET_ICONS = [
   { icon: "Package", label: "Lainnya" },
 ];
 
-const WALLET_COLORS = [
-  "#0F172A", "#1E293B", "#334155", "#475569",
-  "#64748B", "#94A3B8",
-];
-
 const WALLET_TYPES: WalletType[] = ["cash", "bank", "ewallet", "credit", "savings", "other"];
 
 export function WalletManageSheet({
@@ -76,7 +71,7 @@ function WalletManageModal({
       ? formatAmountInput(editWallet.initialBalance)
       : ""
   );
-  const [color, setColor] = useState(editWallet?.color || "#0F172A");
+  const color = editWallet?.color || "#0F172A";
   const [icon, setIcon] = useState(editWallet?.icon || "Wallet");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -166,7 +161,7 @@ function WalletManageModal({
         <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
           {/* Live Preview Card */}
           <div className="flex items-center gap-3.5 rounded-2xl p-4 transition-all border border-slate-200/80 bg-slate-50">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white aurora-glass-active shadow-xs">
               <CategoryIcon icon={icon} color="#FFFFFF" className="h-6 w-6" />
             </div>
             <div>
@@ -184,34 +179,6 @@ function WalletManageModal({
             </div>
           </div>
 
-          {/* Color Picker */}
-          <div>
-            <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Warna Tema
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {WALLET_COLORS.map((c) => {
-                const active = color === c;
-                return (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setColor(c)}
-                    className={cn(
-                      "relative flex h-8 w-8 items-center justify-center rounded-full transition-all cursor-pointer",
-                      active ? "scale-110 ring-2 ring-offset-2 ring-slate-900" : "hover:scale-105"
-                    )}
-                    style={{ backgroundColor: c }}
-                  >
-                    {active && (
-                      <Check className="h-4 w-4 text-white" strokeWidth={3} />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Icon Picker */}
           <div>
             <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -226,9 +193,9 @@ function WalletManageModal({
                     type="button"
                     onClick={() => setIcon(i)}
                     className={cn(
-                      "flex flex-col items-center justify-center gap-1 rounded-xl py-2.5 px-2 border transition-all cursor-pointer",
+                      "flex flex-col items-center justify-center gap-1 rounded-xl py-2.5 px-2 border transition-all cursor-pointer active:scale-95",
                       active
-                        ? "border-slate-900 bg-slate-900 text-white"
+                        ? "aurora-glass-active shadow-xs text-white"
                         : "border-slate-200/80 bg-slate-50/50 hover:bg-slate-100 text-slate-600"
                     )}
                     title={label}
@@ -296,7 +263,7 @@ function WalletManageModal({
                     className={cn(
                       "rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer",
                       active
-                        ? "bg-slate-900 text-white shadow-xs"
+                        ? "aurora-glass-active shadow-xs"
                         : "bg-white text-slate-500 border border-slate-200/80 hover:bg-slate-50"
                     )}
                   >
@@ -315,7 +282,7 @@ function WalletManageModal({
               "w-full h-[52px] rounded-full py-3.5 text-sm font-bold transition-all cursor-pointer disabled:cursor-not-allowed",
               isSubmitting || !name.trim()
                 ? "bg-slate-100 text-slate-400"
-                : "bg-slate-900 text-white hover:bg-black active:scale-[0.98]"
+                : "aurora-glass-active hover:opacity-95 active:scale-[0.98] shadow-md shadow-sky-500/20"
             )}
           >
             {isSubmitting

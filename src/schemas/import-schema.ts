@@ -42,6 +42,8 @@ const settingsImportSchema = z.object({
   currency: z.literal("IDR"),
   monthlyBudget: z.number().int().nonnegative().optional(),
   defaultPaymentMethod: z.enum(["cash", "bank", "debit", "credit", "ewallet"]).optional(),
+  defaultExpenseWalletId: z.string().optional(),
+  defaultIncomeWalletId: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

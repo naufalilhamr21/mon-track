@@ -162,7 +162,7 @@ function BudgetSheetModal({
                   className={cn(
                     "rounded-xl border py-2 text-xs font-bold transition-all active:scale-95 cursor-pointer",
                     rawAmount === val
-                      ? "border-slate-900 bg-slate-900 text-white shadow-xs"
+                      ? "aurora-glass-active shadow-xs"
                       : "border-slate-200 bg-slate-50/60 text-slate-600 hover:bg-slate-100"
                   )}
                 >
@@ -176,7 +176,7 @@ function BudgetSheetModal({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-[52px] rounded-full bg-slate-900 text-white font-bold hover:bg-black active:scale-[0.98] transition-all cursor-pointer disabled:opacity-60"
+            className="w-full h-[52px] rounded-full font-bold aurora-glass-active hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-60 shadow-md shadow-sky-500/20"
           >
             {isSubmitting ? "Menyimpan..." : "Simpan Anggaran"}
           </button>

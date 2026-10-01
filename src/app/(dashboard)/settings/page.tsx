@@ -22,15 +22,22 @@ import {
   Smartphone,
   Database,
   Shield,
+  WalletCards,
+  ArrowUpRight,
+  ArrowDownLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { syncEngine } from "@/lib/sync-engine";
 import { PwaInstallModal } from "@/components/ui/pwa-install-modal";
+import { DefaultWalletSheet } from "@/components/settings/default-wallet-sheet";
+import { WALLET_TYPE_LABELS } from "@/types/wallet";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
 
   const settings = useSettingsStore((s) => s.settings);
+  const setDefaultExpenseWallet = useSettingsStore((s) => s.setDefaultExpenseWallet);
+  const setDefaultIncomeWallet = useSettingsStore((s) => s.setDefaultIncomeWallet);
 
   const transactions = useTransactionStore((s) => s.transactions);
   const categories = useCategoryStore((s) => s.categories);
@@ -46,6 +53,13 @@ export default function SettingsPage() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [walletSheetType, setWalletSheetType] = useState<"expense" | "income" | null>(null);
+
+  const defaultWallet = wallets.find((w) => w.isDefault) ?? wallets[0];
+  const expenseWallet =
+    wallets.find((w) => w.id === settings.defaultExpenseWalletId) ?? defaultWallet;
+  const incomeWallet =
+    wallets.find((w) => w.id === settings.defaultIncomeWalletId) ?? defaultWallet;
 
   const handleInstallClick = async () => {
     await promptInstall();
@@ -188,7 +202,7 @@ export default function SettingsPage() {
 
       {/* Profile Card */}
       <div className="fun-card mb-5 p-4 flex items-center gap-4">
-        <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl text-base font-extrabold text-white bg-slate-900">
+        <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl text-base font-extrabold text-white aurora-glass-active">
           {(session?.user?.name?.[0] ?? "U").toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
@@ -199,6 +213,31 @@ export default function SettingsPage() {
             {session?.user?.email}
           </div>
         </div>
+      </div>
+
+      {/* ── Metode Pembayaran Default ── */}
+      <SectionTitle icon={WalletCards}>Metode Pembayaran</SectionTitle>
+      <div className="fun-card mb-5 overflow-hidden">
+        <SettingsRow
+          icon={ArrowUpRight}
+          label="Default Pengeluaran"
+          sublabel={
+            expenseWallet
+              ? `${expenseWallet.name} • ${WALLET_TYPE_LABELS[expenseWallet.type] || expenseWallet.type}`
+              : "Pilih dompet default"
+          }
+          onClick={() => setWalletSheetType("expense")}
+        />
+        <SettingsRow
+          icon={ArrowDownLeft}
+          label="Default Pemasukan"
+          sublabel={
+            incomeWallet
+              ? `${incomeWallet.name} • ${WALLET_TYPE_LABELS[incomeWallet.type] || incomeWallet.type}`
+              : "Pilih dompet default"
+          }
+          onClick={() => setWalletSheetType("income")}
+        />
       </div>
 
       {/* ── Aplikasi ── */}
@@ -301,7 +340,7 @@ export default function SettingsPage() {
             Data terenkripsi &amp; aman
           </p>
           <p className="text-xs font-medium text-slate-500 leading-relaxed">
-            Semua data keuangan disimpan secara lokal di perangkat. Saat sinkronisasi ke cloud, data dienkripsi end-to-end (AES-GCM 256-bit) sehingga hanya Anda yang bisa membacanya.
+            Data Anda tersimpan di perangkat dan terenkripsi saat sinkronisasi ke cloud.
           </p>
         </div>
       </div>
@@ -351,6 +390,29 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {walletSheetType && (
+        <DefaultWalletSheet
+          open={!!walletSheetType}
+          onOpenChange={(open) => {
+            if (!open) setWalletSheetType(null);
+          }}
+          type={walletSheetType}
+          currentWalletId={
+            walletSheetType === "expense"
+              ? settings.defaultExpenseWalletId
+              : settings.defaultIncomeWalletId
+          }
+          onSelect={async (walletId) => {
+            const userIdentifier = session?.user?.email || session?.user?.id;
+            if (walletSheetType === "expense") {
+              await setDefaultExpenseWallet(walletId, userIdentifier);
+            } else {
+              await setDefaultIncomeWallet(walletId, userIdentifier);
+            }
+          }}
+        />
       )}
 
       <PwaInstallModal />
