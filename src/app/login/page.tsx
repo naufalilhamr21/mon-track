@@ -26,7 +26,7 @@ export default function LoginPage() {
           {/* Logo container */}
           <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center">
             <Image
-              src="/icons/montrack-logo.jpg"
+              src="/icons/moneta-logo.jpg"
               alt="Moneta Logo"
               width={80}
               height={80}

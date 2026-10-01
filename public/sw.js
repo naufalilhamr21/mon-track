@@ -1,4 +1,4 @@
-const CACHE_NAME = 'moneta-v1';
+const CACHE_NAME = 'moneta-v2';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/favicon.ico',
@@ -6,7 +6,8 @@ const STATIC_ASSETS = [
   '/icons/icon-512.png',
   '/icons/apple-touch-icon.png',
   '/icons/logo-baru.png',
-  '/icons/montrack-logo.jpg',
+  '/icons/moneta-logo.jpg',
+  '/icons/moneta-web-icon.jpg',
 ];
 
 self.addEventListener('install', (event) => {

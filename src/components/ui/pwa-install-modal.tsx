@@ -51,7 +51,7 @@ export function PwaInstallModal() {
                 <div className="flex items-center gap-3">
                   <div className="relative h-11 w-11 shrink-0 rounded-2xl overflow-hidden shadow-md">
                     <Image
-                      src="/icons/montrack-logo.jpg"
+                      src="/icons/moneta-logo.jpg"
                       alt="Moneta Logo"
                       width={44}
                       height={44}

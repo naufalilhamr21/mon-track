@@ -1,6 +1,6 @@
 Add-Type -AssemblyName System.Drawing
 
-$srcPath = "d:\mon-track\public\icons\montrack-logo.jpg"
+$srcPath = "d:\mon-track\public\icons\moneta-web-icon.jpg"
 if (-not (Test-Path $srcPath)) {
     Write-Error "Source file not found: $srcPath"
     exit 1
@@ -27,6 +27,8 @@ Resize-And-Save $img 180 180 "d:\mon-track\public\icons\apple-touch-icon.png"
 Resize-And-Save $img 512 512 "d:\mon-track\public\icons\logo-baru.png"
 Resize-And-Save $img 192 192 "d:\mon-track\src\app\icon.png"
 Resize-And-Save $img 180 180 "d:\mon-track\src\app\apple-icon.png"
+Resize-And-Save $img 48 48 "d:\mon-track\public\favicon.ico"
+Resize-And-Save $img 48 48 "d:\mon-track\src\app\favicon.ico"
 
 $img.Dispose()
-Write-Host "All icons generated successfully!"
+Write-Host "All web icons generated successfully!"

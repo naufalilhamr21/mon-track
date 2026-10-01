@@ -108,7 +108,7 @@ export default function DashboardLayout({
           <div className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center">
             <div className="absolute inset-0 rounded-[1.5rem] bg-blue-300 opacity-30 blur-lg" />
             <Image
-              src="/icons/montrack-logo.jpg"
+              src="/icons/moneta-logo.jpg"
               alt="Moneta"
               width={80}
               height={80}
