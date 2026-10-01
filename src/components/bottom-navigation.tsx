@@ -57,7 +57,7 @@ export function BottomNavigation({ onAddExpense }: BottomNavigationProps) {
 
       {/* Separate Glass Aurora Gradient FAB (Elevated higher, larger size for superior one-thumb ergonomics) */}
       <div
-        className="fixed right-4 bottom-7 z-40 pointer-events-auto"
+        className="fixed right-4 bottom-[85px] z-40 pointer-events-auto"
         style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         <button
