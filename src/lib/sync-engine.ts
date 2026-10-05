@@ -241,7 +241,7 @@ export const syncEngine = {
   },
 
   /**
-   * Sync settings (including monthlyBudget) to Supabase.
+   * Sync settings (including monthlyBudget, default wallets, and payment method) to Supabase.
    */
   async syncSettings(settings: Settings, userIdentifier?: string | null): Promise<boolean> {
     if (typeof window === "undefined" || !navigator.onLine) return false;
@@ -249,12 +249,21 @@ export const syncEngine = {
       const secret = userIdentifier || "default_user";
       const hashedUser = await hashUserId(secret);
 
+      // Encode default wallets mapping into default_payment_method field to preserve across cloud sync
+      let paymentMethodField: string = settings.defaultPaymentMethod || "cash";
+      const flags: string[] = [];
+      if (settings.defaultExpenseWalletId) flags.push(`exp:${settings.defaultExpenseWalletId}`);
+      if (settings.defaultIncomeWalletId) flags.push(`inc:${settings.defaultIncomeWalletId}`);
+      if (flags.length > 0) {
+        paymentMethodField = `${paymentMethodField}|${flags.join("|")}`;
+      }
+
       const payload = {
         id: DEFAULT_SETTINGS.id,
         user_id: hashedUser,
         currency: settings.currency || "IDR",
         monthly_budget: settings.monthlyBudget ? Number(settings.monthlyBudget) : null,
-        default_payment_method: settings.defaultPaymentMethod || "cash",
+        default_payment_method: paymentMethodField,
         created_at: settings.createdAt || new Date().toISOString(),
         updated_at: settings.updatedAt || new Date().toISOString(),
       };
@@ -360,7 +369,18 @@ export const syncEngine = {
               if (synced) totalPushed++;
             } else {
               const localTime = new Date(localW.updatedAt || localW.createdAt || 0).getTime();
-              const remoteTime = new Date(remoteMatch.created_at || 0).getTime();
+              const remoteDecrypted = await decryptObject<EncryptedWalletPayload>(
+                remoteMatch.name,
+                secret,
+                {
+                  name: localW.name,
+                  initialBalance: localW.initialBalance,
+                  type: localW.type,
+                  isDefault: remoteMatch.is_default,
+                  updatedAt: remoteMatch.created_at,
+                }
+              );
+              const remoteTime = new Date(remoteDecrypted.updatedAt || remoteMatch.created_at || 0).getTime();
               if (localTime > remoteTime) {
                 const synced = await this.syncWallet(localW, secret);
                 if (synced) totalPushed++;
@@ -377,11 +397,11 @@ export const syncEngine = {
               remoteRow.name,
               secret,
               {
-                name: "Dompet",
-                initialBalance: 0,
-                type: "cash",
-                isDefault: remoteRow.is_default,
-                updatedAt: remoteRow.created_at,
+                name: localMatch?.name || "Dompet",
+                initialBalance: localMatch?.initialBalance || 0,
+                type: localMatch?.type || "cash",
+                isDefault: localMatch?.isDefault ?? remoteRow.is_default,
+                updatedAt: localMatch?.updatedAt || remoteRow.created_at,
               }
             );
 
@@ -390,17 +410,18 @@ export const syncEngine = {
               : 0;
             const remoteTime = new Date(decrypted.updatedAt || remoteRow.created_at || 0).getTime();
 
-            if (!localMatch || remoteTime >= localTime) {
+            // Only overwrite local if remote is strictly newer or local doesn't exist
+            if (!localMatch || remoteTime > localTime) {
               const walletItem: Wallet = {
                 id: walletId,
                 name: decrypted.name,
                 type: decrypted.type || "cash",
                 initialBalance: decrypted.initialBalance || 0,
-                color: remoteRow.color || "#7C3AED",
-                icon: remoteRow.icon || "Wallet",
+                color: remoteRow.color || localMatch?.color || "#7C3AED",
+                icon: remoteRow.icon || localMatch?.icon || "Wallet",
                 isDefault: decrypted.isDefault ?? remoteRow.is_default ?? false,
-                createdAt: remoteRow.created_at,
-                updatedAt: decrypted.updatedAt || remoteRow.created_at,
+                createdAt: remoteRow.created_at || localMatch?.createdAt || new Date().toISOString(),
+                updatedAt: decrypted.updatedAt || remoteRow.created_at || new Date().toISOString(),
               };
 
               await db.wallets.put(walletItem);
@@ -469,8 +490,8 @@ export const syncEngine = {
         const localTime = localMatch ? new Date(localMatch.updatedAt || localMatch.createdAt || 0).getTime() : 0;
         const remoteTime = new Date(remote.updated_at || remote.created_at || 0).getTime();
 
-        // Only overwrite local if remote is newer or item doesn't exist locally
-        if (!localMatch || remoteTime >= localTime) {
+        // Only overwrite local if remote is strictly newer or item doesn't exist locally
+        if (!localMatch || remoteTime > localTime) {
           const decryptedAmount = await decryptAmount(remote.amount, secret);
           const decryptedNote = await decryptText(remote.note, secret);
 
@@ -525,22 +546,39 @@ export const syncEngine = {
         const localTime = new Date(localSettings?.updatedAt || localSettings?.createdAt || 0).getTime();
         const remoteTime = new Date(remoteSettings.updated_at || remoteSettings.created_at || 0).getTime();
 
-        if (!localSettings || remoteTime >= localTime) {
+        // Decode default wallets mapping from remote default_payment_method
+        let remoteDefaultMethod: PaymentMethod = "cash";
+        let remoteExpWalletId: string | undefined = localSettings?.defaultExpenseWalletId;
+        let remoteIncWalletId: string | undefined = localSettings?.defaultIncomeWalletId;
+
+        if (remoteSettings.default_payment_method) {
+          const parts = (remoteSettings.default_payment_method as string).split("|");
+          remoteDefaultMethod = (parts[0] as PaymentMethod) || "cash";
+          for (let i = 1; i < parts.length; i++) {
+            if (parts[i].startsWith("exp:")) remoteExpWalletId = parts[i].slice(4);
+            if (parts[i].startsWith("inc:")) remoteIncWalletId = parts[i].slice(4);
+          }
+        }
+
+        if (!localSettings || remoteTime > localTime) {
           const remoteBudget =
             remoteSettings.monthly_budget !== null && remoteSettings.monthly_budget !== undefined
               ? Number(remoteSettings.monthly_budget)
               : undefined;
 
           await db.settings.put({
+            ...localSettings,
             id: DEFAULT_SETTINGS.id,
             currency: remoteSettings.currency || "IDR",
             monthlyBudget: remoteBudget,
-            defaultPaymentMethod: (remoteSettings.default_payment_method as PaymentMethod) || "cash",
-            createdAt: remoteSettings.created_at || new Date().toISOString(),
+            defaultPaymentMethod: remoteDefaultMethod,
+            defaultExpenseWalletId: remoteExpWalletId,
+            defaultIncomeWalletId: remoteIncWalletId,
+            createdAt: remoteSettings.created_at || localSettings?.createdAt || new Date().toISOString(),
             updatedAt: remoteSettings.updated_at || new Date().toISOString(),
           });
           console.log("[SyncEngine] Remote settings pulled and applied locally. Budget:", remoteBudget);
-        } else if (localSettings && localTime > remoteTime) {
+        } else if (localSettings && localTime >= remoteTime) {
           await this.syncSettings(localSettings, secret);
         }
       } else if (localSettings) {

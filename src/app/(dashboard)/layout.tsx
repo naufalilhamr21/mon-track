@@ -54,7 +54,12 @@ export default function DashboardLayout({
           // Background Auto-Sync to/from Supabase
           if (navigator.onLine) {
             syncEngine.syncAll(userIdentifier).then(() => {
-              Promise.all([loadTransactions(), loadSettings()]);
+              Promise.all([
+                loadTransactions(),
+                loadCategories(),
+                loadSettings(),
+                loadWallets(),
+              ]);
             });
           }
         } catch (error) {
@@ -68,7 +73,12 @@ export default function DashboardLayout({
       // Listen for reconnect event
       const handleOnline = () => {
         syncEngine.syncAll(userIdentifier).then(() => {
-          Promise.all([loadTransactions(), loadSettings()]);
+          Promise.all([
+            loadTransactions(),
+            loadCategories(),
+            loadSettings(),
+            loadWallets(),
+          ]);
         });
       };
 
