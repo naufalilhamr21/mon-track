@@ -102,12 +102,12 @@ export function MonthlySummaryCard({
                 {isPositiveFlow ? (
                   <>
                     <TrendingUp className="h-3.5 w-3.5 text-slate-900" />
-                    <span>Surplus ({currentLabel.short})</span>
+                    <span>Surplus</span>
                   </>
                 ) : (
                   <>
                     <TrendingDown className="h-3.5 w-3.5 text-slate-600" />
-                    <span>Defisit ({currentLabel.short})</span>
+                    <span>Defisit</span>
                   </>
                 )}
               </span>
@@ -131,63 +131,54 @@ export function MonthlySummaryCard({
       {/* ── Income / Expense / Transaction Split Metric ── */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {/* Income Card */}
-        <div className="fun-card p-3 sm:p-4 transition-all">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+        <div className="fun-card p-3 sm:p-4 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100">
               <ArrowDownLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-900" strokeWidth={2.5} />
             </div>
-            <div className="min-w-0">
-              <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
-                Pemasukan
-              </span>
-              <span className="block text-[8px] sm:text-[9px] font-medium text-slate-400 truncate">
-                {currentLabel.short}
-              </span>
-            </div>
           </div>
-          <p className="text-xs sm:text-base font-extrabold tabular-nums tracking-tight text-slate-900 truncate">
-            {formatCurrency(income)}
-          </p>
+          <div>
+            <span className="block text-[10px] sm:text-[11px] font-bold uppercase tracking-tight text-slate-500 mb-0.5">
+              Pemasukan
+            </span>
+            <p className="text-xs sm:text-base font-extrabold tabular-nums tracking-tight text-slate-900 truncate">
+              {formatCurrency(income)}
+            </p>
+          </div>
         </div>
 
         {/* Expense Card */}
-        <div className="fun-card p-3 sm:p-4 transition-all">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+        <div className="fun-card p-3 sm:p-4 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100">
               <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-600" strokeWidth={2.5} />
             </div>
-            <div className="min-w-0">
-              <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
-                Pengeluaran
-              </span>
-              <span className="block text-[8px] sm:text-[9px] font-medium text-slate-400 truncate">
-                {currentLabel.short}
-              </span>
-            </div>
           </div>
-          <p className="text-xs sm:text-base font-extrabold tabular-nums tracking-tight text-slate-900 truncate">
-            {formatCurrency(spending)}
-          </p>
+          <div>
+            <span className="block text-[10px] sm:text-[11px] font-bold uppercase tracking-tight text-slate-500 mb-0.5">
+              Pengeluaran
+            </span>
+            <p className="text-xs sm:text-base font-extrabold tabular-nums tracking-tight text-slate-900 truncate">
+              {formatCurrency(spending)}
+            </p>
+          </div>
         </div>
 
         {/* Transaction Count Card */}
-        <div className="fun-card p-3 sm:p-4 transition-all">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+        <div className="fun-card p-3 sm:p-4 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100">
               <ReceiptText className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-800" strokeWidth={2.5} />
             </div>
-            <div className="min-w-0">
-              <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
-                Transaksi
-              </span>
-              <span className="block text-[8px] sm:text-[9px] font-medium text-slate-400 truncate">
-                {currentLabel.short}
-              </span>
-            </div>
           </div>
-          <p className="text-xs sm:text-base font-extrabold tabular-nums tracking-tight text-slate-900 truncate">
-            {transactionCount}
-          </p>
+          <div>
+            <span className="block text-[10px] sm:text-[11px] font-bold uppercase tracking-tight text-slate-500 mb-0.5">
+              Transaksi
+            </span>
+            <p className="text-xs sm:text-base font-extrabold tabular-nums tracking-tight text-slate-900 truncate">
+              {transactionCount}
+            </p>
+          </div>
         </div>
       </div>
 
