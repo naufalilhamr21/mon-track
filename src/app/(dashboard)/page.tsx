@@ -7,18 +7,15 @@ import { Search, RefreshCw } from "lucide-react";
 import { useTransactionStore } from "@/stores/transaction-store";
 import { useCategoryStore } from "@/stores/category-store";
 import { useSettingsStore } from "@/stores/settings-store";
-import { MonthlySummaryCard } from "@/components/dashboard/monthly-summary-card";
+import { MonthlySummaryCard, type CashFlowTimeframe } from "@/components/dashboard/monthly-summary-card";
 import { BudgetSheet } from "@/components/dashboard/budget-sheet";
-import { QuickStats } from "@/components/dashboard/quick-stats";
 import { CategoryChart } from "@/components/dashboard/category-chart";
-import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { WalletCarousel } from "@/components/dashboard/wallet-carousel";
 import { Toast, useToast } from "@/components/ui/toast";
 import {
   calculateTotalExpense,
   calculateTotalIncome,
   calculateNetCashFlow,
-  calculateTodaySpending,
   calculateCategorySpending,
 } from "@/lib/calculations/transaction-calculations";
 import {
@@ -26,9 +23,8 @@ import {
   calculateBudgetPercentage,
   getBudgetStatus,
 } from "@/lib/calculations/budget-calculations";
-import { cn } from "@/lib/utils";
+import { cn, getToday, getWeekRange } from "@/lib/utils";
 import { syncEngine } from "@/lib/sync-engine";
-import type { Transaction } from "@/types/transaction";
 
 function getGreetingText(): string {
   const h = new Date().getHours();
@@ -47,10 +43,9 @@ export default function DashboardPage() {
   const loadTransactions = useTransactionStore((s) => s.loadTransactions);
   const loadSettings = useSettingsStore((s) => s.loadSettings);
 
+  const [cashFlowTimeframe, setCashFlowTimeframe] = useState<CashFlowTimeframe>("monthly");
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-  // editTransaction kept for future use via global event
-  const [, setEditTransaction] = useState<Transaction | null>(null);
   const { toast, showToast, hideToast } = useToast();
 
   const handleRefresh = async () => {
@@ -75,22 +70,34 @@ export default function DashboardPage() {
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
+  const todayStr = getToday();
+  const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
+  const weekRange = getWeekRange(now);
 
-  const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
-  const monthTransactions = transactions.filter((t) => t.date.startsWith(prefix));
+  // Month transactions for budget & general stats
+  const monthTransactions = transactions.filter((t) => t.date.startsWith(monthPrefix));
+
+  // Timeframe transactions for Cash Flow card (Daily / Weekly / Monthly)
+  const timeframeTransactions = transactions.filter((t) => {
+    if (cashFlowTimeframe === "daily") {
+      return t.date === todayStr;
+    }
+    if (cashFlowTimeframe === "weekly") {
+      return t.date >= weekRange.start && t.date <= weekRange.end;
+    }
+    return t.date.startsWith(monthPrefix);
+  });
+
+  const cashFlowSpending = calculateTotalExpense(timeframeTransactions);
+  const cashFlowIncome = calculateTotalIncome(timeframeTransactions);
+  const netCashFlow = calculateNetCashFlow(timeframeTransactions);
+  const cashFlowTransactionCount = timeframeTransactions.length;
 
   const monthlySpending = calculateTotalExpense(monthTransactions);
-  const monthlyIncome = calculateTotalIncome(monthTransactions);
-  const netCashFlow = calculateNetCashFlow(monthTransactions);
-  const todaySpending = calculateTodaySpending(transactions);
   const budgetRemaining = calculateBudgetRemaining(settings.monthlyBudget, monthlySpending);
   const budgetPercentage = calculateBudgetPercentage(settings.monthlyBudget, monthlySpending);
   const budgetStatus = getBudgetStatus(settings.monthlyBudget, monthlySpending);
   const categorySpending = calculateCategorySpending(monthTransactions, categories);
-
-  const recentTransactions = [...transactions]
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    .slice(0, 5);
 
   const firstName = session?.user?.name?.split(" ")[0] ?? "";
   const fullDateFormatted = new Intl.DateTimeFormat("id-ID", {
@@ -154,11 +161,17 @@ export default function DashboardPage() {
 
       {/* ── Main Content Body ── */}
       <div className="mx-auto max-w-lg px-4 -mt-4 space-y-4">
-        {/* Monthly Summary Hero Card */}
+        {/* 1. TOP 1: Total Asset / Dompet dan Rincian Asset */}
+        <WalletCarousel />
+
+        {/* 2. TOP 2: Arus Kas, Pemasukan, Pengeluaran, dan Transaksi dengan Switcher (Harian / Mingguan / Bulanan) */}
         <MonthlySummaryCard
-          spending={monthlySpending}
-          income={monthlyIncome}
+          timeframe={cashFlowTimeframe}
+          onTimeframeChange={setCashFlowTimeframe}
+          spending={cashFlowSpending}
+          income={cashFlowIncome}
           netCashFlow={netCashFlow}
+          transactionCount={cashFlowTransactionCount}
           budget={settings.monthlyBudget}
           remaining={budgetRemaining}
           percentage={budgetPercentage}
@@ -166,26 +179,10 @@ export default function DashboardPage() {
           onEditBudget={() => setBudgetOpen(true)}
         />
 
-        {/* Wallet Carousel */}
-        <WalletCarousel />
-
-        {/* Quick Stats */}
-        <QuickStats
-          todaySpending={todaySpending}
-          transactionCount={monthTransactions.length}
-        />
-
-        {/* Category Chart */}
+        {/* 3. Category Chart */}
         {categorySpending.length > 0 && (
           <CategoryChart data={categorySpending} />
         )}
-
-        {/* Recent Transactions */}
-        <RecentTransactions
-          transactions={recentTransactions}
-          categories={categories}
-          onEditTransaction={setEditTransaction}
-        />
       </div>
 
       {/* Budget Bottom Sheet */}

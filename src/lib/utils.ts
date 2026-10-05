@@ -80,6 +80,25 @@ export function getMonthRange(year: number, month: number): { start: string; end
 }
 
 /**
+ * Get the first (Monday) and last day (Sunday) of the current week.
+ */
+export function getWeekRange(refDate: Date = new Date()): { start: string; end: string } {
+  const date = new Date(refDate);
+  const day = date.getDay(); // 0 is Sunday, 1 is Monday...
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(date);
+  monday.setDate(date.getDate() + diffToMonday);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  return {
+    start: toLocalDateString(monday),
+    end: toLocalDateString(sunday),
+  };
+}
+
+/**
  * Get Indonesian month name and year.
  * "Agustus 2026"
  */

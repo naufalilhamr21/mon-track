@@ -23,7 +23,7 @@ export function WalletCarousel() {
   if (wallets.length === 0) return null;
 
   return (
-    <>
+    <div className="space-y-3">
       {/* Total Balance — Clean White Card */}
       <div className="fun-card p-4.5 transition-all">
         <div className="flex items-center justify-between">
@@ -90,6 +90,6 @@ export function WalletCarousel() {
         onOpenChange={(v) => { if (!v) setEditWallet(null); }}
         editWallet={editWallet}
       />
-    </>
+    </div>
   );
 }
